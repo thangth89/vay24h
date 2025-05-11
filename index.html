@@ -27,8 +27,9 @@
             contentMappings[url] = id;
         }
         
-        function showContent(id) {
-            console.log("Hiển thị nội dung cho:", id);
+        // Hàm hiển thị nội dung không thêm vào lịch sử (dùng cho sự kiện popstate)
+        function showContentWithoutHistory(id) {
+            console.log("Hiển thị nội dung cho:", id, "(không thêm lịch sử)");
             
             // Ẩn tất cả các phần nội dung
             const sections = document.querySelectorAll('.content-section');
@@ -51,20 +52,33 @@
                 activeLink.classList.add('active');
             }
             
-            // Cập nhật URL
+            // Cập nhật tiêu đề trang
+            if (selectedSection) {
+                const pageTitle = selectedSection.querySelector('h2').textContent + ' - Vay Online';
+                document.title = pageTitle;
+            }
+        }
+        
+        // Hàm hiển thị nội dung và thêm vào lịch sử
+        function showContent(id) {
+            console.log("Hiển thị nội dung cho:", id);
+            
+            // Hiển thị nội dung
+            showContentWithoutHistory(id);
+            
+            // Cập nhật URL và thêm vào lịch sử
             if (urlMappings[id]) {
                 const newUrl = urlMappings[id];
                 const pageTitle = document.getElementById(id).querySelector('h2').textContent + ' - Vay Online';
                 
                 // Cập nhật URL mà không tải lại trang
                 history.pushState({ id: id }, pageTitle, newUrl);
-                document.title = pageTitle;
             }
         }
         
         // Hàm tải nội dung tin tức bằng AJAX
-        function loadNews(url, title) {
-            console.log("Đang tải tin tức từ URL:", url);
+        function loadNews(url, title, addToHistory = true) {
+            console.log("Đang tải tin tức từ URL:", url, "addToHistory:", addToHistory);
             
             // Hiển thị phần tin tức trước
             const newsDetailSection = document.getElementById('news-detail');
@@ -115,9 +129,17 @@
                     document.getElementById('news-detail-content').appendChild(content.cloneNode(true));
                     document.getElementById('news-title').textContent = title;
                     
-                    // Cập nhật URL thân thiện
-                    history.pushState({ url: url, title: title, type: 'news' }, title, friendlyUrl);
+                    // Cập nhật tiêu đề trang
                     document.title = title + ' - Vay Online';
+                    
+                    // Chỉ cập nhật URL và thêm vào lịch sử nếu addToHistory = true
+                    if (addToHistory) {
+                        // Cập nhật URL thân thiện và thêm vào lịch sử
+                        history.pushState({ url: url, title: title, type: 'news' }, title, friendlyUrl);
+                    } else if (window.location.pathname !== friendlyUrl) {
+                        // Cập nhật URL nhưng không thêm vào lịch sử (replaceState thay vì pushState)
+                        history.replaceState({ url: url, title: title, type: 'news' }, title, friendlyUrl);
+                    }
                     
                     console.log("Đã cập nhật nội dung tin tức thành công");
                 })
@@ -138,38 +160,48 @@
         window.addEventListener('popstate', function(event) {
             console.log("Sự kiện popstate được kích hoạt:", event.state);
             
+            // Xác định URL hiện tại dựa trên window.location
+            const currentPath = window.location.pathname;
+            
+            // Xử lý dựa vào state được lưu trong history hoặc URL hiện tại
             if (event.state && event.state.type === 'news') {
                 // Quay trở lại một tin tức cụ thể
-                loadNews(event.state.url, event.state.title);
+                loadNews(event.state.url, event.state.title, false); // false để không thêm lịch sử mới
             } else if (event.state && event.state.id) {
                 // Quay trở lại một section
-                showContent(event.state.id);
+                showContentWithoutHistory(event.state.id);
             } else {
-                // Xác định section dựa vào URL hiện tại
-                const currentPath = window.location.pathname;
+                // Nếu không có state cụ thể, phân tích URL hiện tại
                 
                 // Kiểm tra nếu là URL tin tức
-                if (currentPath.startsWith('/tin-tuc/')) {
+                if (currentPath.startsWith('/tin-tuc/') && currentPath !== '/tin-tuc/') {
                     const newsSlug = currentPath.split('/').pop();
                     const newsUrl = '/news/' + newsSlug + '.html';
                     
                     // Tìm tin tức tương ứng
                     const newsLinks = document.querySelectorAll('.news-item-link');
+                    let found = false;
                     for (let link of newsLinks) {
                         if (link.getAttribute('href').includes(newsSlug)) {
-                            loadNews(link.getAttribute('href'), link.querySelector('h3').textContent);
+                            loadNews(link.getAttribute('href'), link.querySelector('h3').textContent, false);
+                            found = true;
                             break;
                         }
+                    }
+                    
+                    // Nếu không tìm thấy tin tức, chuyển về danh sách tin
+                    if (!found) {
+                        showContentWithoutHistory('news');
                     }
                 } else {
                     // Tìm section tương ứng với URL hiện tại
                     const sectionId = contentMappings[currentPath] || 'home';
-                    showContent(sectionId);
+                    showContentWithoutHistory(sectionId);
                 }
             }
         });
         
-        // Kiểm tra URL khi trang được tải
+        // Khởi tạo trạng thái ban đầu của trang khi tải
         document.addEventListener('DOMContentLoaded', function() {
             const currentPath = window.location.pathname;
             
@@ -183,7 +215,8 @@
                 let found = false;
                 for (let link of newsLinks) {
                     if (link.getAttribute('href').includes(newsSlug)) {
-                        loadNews(link.getAttribute('href'), link.querySelector('h3').textContent);
+                        // Tải nội dung tin tức nhưng không thêm vào lịch sử
+                        loadNews(link.getAttribute('href'), link.querySelector('h3').textContent, false);
                         found = true;
                         break;
                     }
@@ -191,12 +224,29 @@
                 
                 // Nếu không tìm thấy tin tức, chuyển hướng về danh sách tin
                 if (!found) {
-                    showContent('news');
+                    // Khởi tạo trạng thái ban đầu là trang danh sách tin tức
+                    showContentWithoutHistory('news');
+                    // Cập nhật URL mà không thêm vào lịch sử
+                    history.replaceState({ id: 'news' }, 'Tin tức - Vay Online', '/tin-tuc');
                 }
             } else {
                 // Tìm section tương ứng với URL hiện tại
                 const sectionId = contentMappings[currentPath] || 'home';
-                showContent(sectionId);
+                
+                // Hiển thị nội dung tương ứng mà không thêm vào lịch sử
+                showContentWithoutHistory(sectionId);
+                
+                // Đảm bảo URL đúng với nội dung hiện tại
+                if (urlMappings[sectionId] && urlMappings[sectionId] !== currentPath) {
+                    history.replaceState({ id: sectionId }, document.title, urlMappings[sectionId]);
+                }
+            }
+            
+            // Khởi tạo trạng thái lịch sử ban đầu
+            if (history.state === null) {
+                const sectionId = contentMappings[currentPath] || 'home';
+                const currentTitle = document.title;
+                history.replaceState({ id: sectionId }, currentTitle, currentPath);
             }
         });
     </script>
