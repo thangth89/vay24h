@@ -454,7 +454,7 @@
 
                  <section class="px-4 py-6 ">
     		<h2 class="text-lg md:text-xl font-bold text-center text-green-700 mb-4">MẸO HƯỚNG DẪN VAY TIỀN ONLINE NHANH VÀ MỞ THẺ TÍN DỤNG ONLINE MIỄN PHÍ</h2>
-		   <details id="loan-guide-details" class="auto-close-details bg-white p-4 rounded-lg shadow mb-4">
+		   <details id="details-1" class="auto-close-details bg-white p-4 rounded-lg shadow mb-4">
       		     <summary class="font-semibold cursor-pointer text-green-800">📌 HƯỚNG DẪN ĐĂNG KÍ VAY ONLINE NHANH TỶ LỆ DUYỆT CAO</summary>
  			<h2 class="text-base font-bold text-green-800">💸 Mẹo Đăng Ký Vay Tiền Online Hiệu Quả 2025 Cho Người Mới – Hướng Dẫn Chi Tiết</h2>
 			<p><strong>Vay tiền online 2025</strong> đang là xu hướng phổ biến nhờ quy trình đơn giản, duyệt nhanh và không cần gặp mặt. Tuy nhiên, để <strong>tăng tỷ lệ xét duyệt</strong> thành công, người mới cần nắm rõ một vài mẹo quan trọng dưới đây.</p>
@@ -501,7 +501,7 @@
        			</div>
     		</details>
 
-    		<details id="credit-details" class="auto-close-details bg-white p-4 rounded-lg shadow mb-4">
+    		<details id="details-1" class="auto-close-details bg-white p-4 rounded-lg shadow mb-4">
       		   <summary class="font-semibold cursor-pointer text-green-800">📌 HƯỚNG DẪN MỞ THẺ TÍN DỤNG ONLINE MIỄN PHÍ</summary>
       		     <h2 class="text-base font-bold text-green-700 mb-4">💳 Hướng Dẫn Mở Thẻ Tín Dụng Online Dễ Duyệt Cho Người Mới (2025)</h2>
                      <p class="mb-4">Bạn muốn chi tiêu trước, trả tiền sau mà không cần vay nóng? <strong>Thẻ tín dụng</strong> là công cụ tài chính giúp bạn thanh toán linh hoạt, được nhiều ngân hàng hỗ trợ đăng ký dễ dàng – đặc biệt là hình thức mở online. Dưới đây là <strong>hướng dẫn chi tiết từ A-Z</strong> giúp bạn hiểu rõ và mở thẻ tín dụng thành công ngay từ lần đầu.</p>
@@ -981,41 +981,45 @@
   });
 </script>
 <script>
+// Chờ cho đến khi trang HTML được tải hoàn toàn
 document.addEventListener('DOMContentLoaded', function() {
-  // Lấy tất cả các phần tử details cần tự động đóng
+  console.log('DOM loaded, initializing details auto-close');
+  
+  // Lấy tất cả các phần tử details có class auto-close-details
   const autoCloseDetails = document.querySelectorAll('.auto-close-details');
   
-  // Đóng tất cả các details mặc định khi trang tải
+  console.log('Found details elements:', autoCloseDetails.length);
+  
+  // Đóng tất cả các details khi trang tải
   autoCloseDetails.forEach(function(detailsElement) {
-    const detailsId = detailsElement.id;
+    console.log('Processing details:', detailsElement.id);
     
     // Đóng details mặc định
     detailsElement.open = false;
     
     // Lắng nghe sự kiện toggle của từng details
     detailsElement.addEventListener('toggle', function() {
-      // Lưu trạng thái hiện tại vào sessionStorage với key là ID của details
-      sessionStorage.setItem(detailsId + '_open', detailsElement.open);
+      console.log('Details toggled:', detailsElement.id, 'is now', detailsElement.open ? 'open' : 'closed');
     });
   });
   
-  // Thêm sự kiện khi người dùng sắp rời khỏi trang
-  window.addEventListener('beforeunload', function() {
-    // Đặt trạng thái closed cho tất cả các details vào sessionStorage
+  // Đóng tất cả details khi người dùng tải lại, back lại trang, hoặc chuyển trang
+  function closeAllDetails() {
+    console.log('Closing all details');
     autoCloseDetails.forEach(function(detailsElement) {
-      const detailsId = detailsElement.id;
-      sessionStorage.setItem(detailsId + '_open', 'false');
+      detailsElement.open = false;
     });
-  });
+  }
   
-  // Thêm sự kiện khi người dùng click vào các liên kết điều hướng
+  // Lắng nghe sự kiện khi người dùng sắp rời khỏi trang
+  window.addEventListener('pagehide', closeAllDetails);
+  window.addEventListener('beforeunload', closeAllDetails);
+  
+  // Đóng details khi người dùng click vào các liên kết điều hướng
   document.querySelectorAll('a[href]:not([href^="#"])').forEach(link => {
     link.addEventListener('click', function() {
-      // Đặt trạng thái closed cho tất cả các details vào sessionStorage
-      autoCloseDetails.forEach(function(detailsElement) {
-        const detailsId = detailsElement.id;
-        sessionStorage.setItem(detailsId + '_open', 'false');
-      });
+      console.log('Navigation link clicked, closing details');
+      closeAllDetails();
     });
   });
 });
