@@ -984,11 +984,21 @@
     });
   });
     window.addEventListener('DOMContentLoaded', () => {
-    setTimeout(() => {
+    // Dùng requestAnimationFrame để chạy sau khi browser đã khôi phục trạng thái cũ
+    requestAnimationFrame(() => {
       document.querySelectorAll('details[open]').forEach(detail => {
-        detail.removeAttribute('open');
+        detail.open = false; // force close
       });
-    }, 10); // delay nhỏ giúp đảm bảo trình duyệt đã áp xong trạng thái trước khi ta reset
+    });
+
+    // Scroll mượt khi mở details
+    document.querySelectorAll("details").forEach(detail => {
+      detail.addEventListener("toggle", function () {
+        if (this.open) {
+          this.scrollIntoView({ behavior: "smooth", block: "start" });
+        }
+      });
+    });
   });
 </script>
 
