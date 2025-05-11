@@ -9,6 +9,24 @@
         .active { font-weight: bold; }
     </style>
     <script>
+        // Định nghĩa mapping giữa ID nội dung và URL
+        const urlMappings = {
+            'home': '/',
+            'about': '/gioi-thieu',
+            'fastloan': '/vay-tien-nhanh',
+            'credit': '/the-tin-dung',
+            'news': '/tin-tuc',
+            'contact': '/lien-he',
+            'dieukhoan': '/dieu-khoan-su-dung',
+            'chinhsach': '/chinh-sach-bao-mat'
+        };
+        
+        // Định nghĩa mapping ngược từ URL về ID nội dung
+        const contentMappings = {};
+        for (const [id, url] of Object.entries(urlMappings)) {
+            contentMappings[url] = id;
+        }
+        
         function showContent(id) {
             console.log("Hiển thị nội dung cho:", id);
             
@@ -31,6 +49,16 @@
             const activeLink = document.getElementById(id + '-link');
             if (activeLink) {
                 activeLink.classList.add('active');
+            }
+            
+            // Cập nhật URL
+            if (urlMappings[id]) {
+                const newUrl = urlMappings[id];
+                const pageTitle = document.getElementById(id).querySelector('h2').textContent + ' - Vay Online';
+                
+                // Cập nhật URL mà không tải lại trang
+                history.pushState({ id: id }, pageTitle, newUrl);
+                document.title = pageTitle;
             }
         }
         
@@ -62,6 +90,10 @@
             document.getElementById('news-detail-content').innerHTML = 
                 '<div class="flex justify-center items-center h-64"><div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-green-500"></div></div>';
             
+            // Tạo đường dẫn URL thân thiện từ URL tin tức
+            const newsSlug = url.split('/').pop().replace('.html', '');
+            const friendlyUrl = '/tin-tuc/' + newsSlug;
+            
             // Gửi yêu cầu AJAX
             fetch(url)
                 .then(response => {
@@ -83,9 +115,8 @@
                     document.getElementById('news-detail-content').appendChild(content.cloneNode(true));
                     document.getElementById('news-title').textContent = title;
                     
-                    // Cập nhật URL để hỗ trợ SEO và bookmark
-                    const urlPath = url.split('/').pop();
-                    history.pushState({ url: url, title: title }, title, urlPath);
+                    // Cập nhật URL thân thiện
+                    history.pushState({ url: url, title: title, type: 'news' }, title, friendlyUrl);
                     document.title = title + ' - Vay Online';
                     
                     console.log("Đã cập nhật nội dung tin tức thành công");
@@ -107,34 +138,65 @@
         window.addEventListener('popstate', function(event) {
             console.log("Sự kiện popstate được kích hoạt:", event.state);
             
-            if (event.state && event.state.url) {
+            if (event.state && event.state.type === 'news') {
+                // Quay trở lại một tin tức cụ thể
                 loadNews(event.state.url, event.state.title);
+            } else if (event.state && event.state.id) {
+                // Quay trở lại một section
+                showContent(event.state.id);
             } else {
-                // Quay lại trang danh sách tin tức hoặc trang chủ
-                if (window.location.pathname.endsWith('/') || window.location.pathname.endsWith('index.html')) {
-                    showContent('home');
+                // Xác định section dựa vào URL hiện tại
+                const currentPath = window.location.pathname;
+                
+                // Kiểm tra nếu là URL tin tức
+                if (currentPath.startsWith('/tin-tuc/')) {
+                    const newsSlug = currentPath.split('/').pop();
+                    const newsUrl = '/news/' + newsSlug + '.html';
+                    
+                    // Tìm tin tức tương ứng
+                    const newsLinks = document.querySelectorAll('.news-item-link');
+                    for (let link of newsLinks) {
+                        if (link.getAttribute('href').includes(newsSlug)) {
+                            loadNews(link.getAttribute('href'), link.querySelector('h3').textContent);
+                            break;
+                        }
+                    }
                 } else {
-                    showContent('news');
+                    // Tìm section tương ứng với URL hiện tại
+                    const sectionId = contentMappings[currentPath] || 'home';
+                    showContent(sectionId);
                 }
             }
         });
         
         // Kiểm tra URL khi trang được tải
         document.addEventListener('DOMContentLoaded', function() {
-            // Mặc định hiển thị trang chủ khi tải trang
-            showContent('home');
+            const currentPath = window.location.pathname;
             
-            // Nếu URL chứa đường dẫn tin tức
-            const path = window.location.pathname;
-            if (path.includes('tin') && path.endsWith('.html')) {
-                // Tìm tin tức tương ứng và tải nội dung
+            // Kiểm tra nếu là URL tin tức cụ thể
+            if (currentPath.startsWith('/tin-tuc/') && currentPath !== '/tin-tuc/') {
+                const newsSlug = currentPath.split('/').pop();
+                const newsUrl = '/news/' + newsSlug + '.html';
+                
+                // Tìm tin tức tương ứng
                 const newsLinks = document.querySelectorAll('.news-item-link');
+                let found = false;
                 for (let link of newsLinks) {
-                    if (link.getAttribute('href').endsWith(path)) {
+                    if (link.getAttribute('href').includes(newsSlug)) {
                         loadNews(link.getAttribute('href'), link.querySelector('h3').textContent);
+                        found = true;
                         break;
                     }
                 }
+                
+                // Nếu không tìm thấy tin tức, chuyển hướng về danh sách tin
+                if (!found) {
+                    showContent('news');
+                }
+            } else {
+                // Tìm section tương ứng với URL hiện tại
+                const sectionId = contentMappings[currentPath] || 'home';
+                showContent(sectionId);
             }
         });
     </script>
@@ -147,10 +209,10 @@
             <h1 class="text-xl md:text-2xl font-bold">Vay Online</h1>
             </div>
             <nav class="flex flex-nowrap overflow-x-auto justify-center space-x-6 mt-2 md:mt-0">
-                <a id="home-link" href="javascript:void(0);" onclick="showContent('home')" class="menu-link text-white hover:underline">Trang chủ</a>
-                <a id="fastloan-link" href="javascript:void(0);" onclick="showContent('fastloan')" class="menu-link text-white hover:underline">Vay tiền nhanh</a>
-                <a id="credit-link" href="javascript:void(0);" onclick="showContent('credit')" class="menu-link text-white hover:underline">Thẻ tín dụng</a>
-                <a id="news-link" href="javascript:void(0);" onclick="showContent('news')" class="menu-link text-white hover:underline">Tin tức</a>
+                <a id="home-link" href="/" onclick="showContent('home'); return false;" class="menu-link text-white hover:underline">Trang chủ</a>
+                <a id="fastloan-link" href="/vay-tien-nhanh" onclick="showContent('fastloan'); return false;" class="menu-link text-white hover:underline">Vay tiền nhanh</a>
+                <a id="credit-link" href="/the-tin-dung" onclick="showContent('credit'); return false;" class="menu-link text-white hover:underline">Thẻ tín dụng</a>
+                <a id="news-link" href="/tin-tuc" onclick="showContent('news'); return false;" class="menu-link text-white hover:underline">Tin tức</a>
             </nav>
         </div>
     </header>
@@ -210,7 +272,7 @@
             <!-- Phần hiển thị chi tiết tin tức -->
             <div id="news-detail" class="content-section hidden">
                 <div class="mb-4">
-                    <a href="javascript:void(0);" onclick="showContent('news'); history.pushState(null, 'Tin tức', window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/') + 1)); return false;" class="text-blue-600 hover:underline flex items-center">
+                    <a href="/tin-tuc" onclick="showContent('news'); return false;" class="text-blue-600 hover:underline flex items-center">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
                         </svg>
@@ -264,19 +326,19 @@
         <div>
             <h4 class="text-lg font-semibold mb-2">Trang thông tin</h4>
             <ul class="space-y-1">
-                <li><a href="javascript:void(0);" onclick="showContent('about')" class="hover:underline">Giới thiệu vay24.pro.vn</a></li>
-                <li><a href="javascript:void(0);" onclick="showContent('dieukhoan')" class="hover:underline">Điều khoản sử dụng</a></li>
-                <li><a href="javascript:void(0);" onclick="showContent('chinhsach')" class="hover:underline">Chính sách bảo mật</a></li>
-                <li><a href="javascript:void(0);" onclick="showContent('contact')" class="hover:underline">Liên hệ với chúng tôi</a></li>
+                <li><a href="/gioi-thieu" onclick="showContent('about'); return false;" class="hover:underline">Giới thiệu vay24.pro.vn</a></li>
+                <li><a href="/dieu-khoan-su-dung" onclick="showContent('dieukhoan'); return false;" class="hover:underline">Điều khoản sử dụng</a></li>
+                <li><a href="/chinh-sach-bao-mat" onclick="showContent('chinhsach'); return false;" class="hover:underline">Chính sách bảo mật</a></li>
+                <li><a href="/lien-he" onclick="showContent('contact'); return false;" class="hover:underline">Liên hệ với chúng tôi</a></li>
             </ul>
         </div>
         <div>
             <h4 class="text-lg font-semibold mb-2">Danh mục bài viết</h4>
             <ul class="space-y-1">
-                <li><a href="javascript:void(0);" onclick="showContent('fastloan')" class="hover:underline">Vay tiền uy tín</a></li>
-                <li><a href="javascript:void(0);" onclick="showContent('credit')" class="hover:underline">Mở thẻ tín dụng</a></li>
-                <li><a href="javascript:void(0);" onclick="showContent('home')" class="hover:underline">Hướng dẫn cơ bản</a></li>
-                <li><a href="javascript:void(0);" onclick="showContent('news')" class="hover:underline">Tổng hợp tin tức</a></li>
+                <li><a href="/vay-tien-nhanh" onclick="showContent('fastloan'); return false;" class="hover:underline">Vay tiền uy tín</a></li>
+                <li><a href="/the-tin-dung" onclick="showContent('credit'); return false;" class="hover:underline">Mở thẻ tín dụng</a></li>
+                <li><a href="/" onclick="showContent('home'); return false;" class="hover:underline">Hướng dẫn cơ bản</a></li>
+                <li><a href="/tin-tuc" onclick="showContent('news'); return false;" class="hover:underline">Tổng hợp tin tức</a></li>
             </ul>
         </div>
     </div>
