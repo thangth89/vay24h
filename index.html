@@ -403,6 +403,10 @@
         window.scrollTo({ top: 0, behavior: "smooth" });
       });
     });
+    // Cuộn lên đầu trang khi bấm Back hoặc Forward
+    window.addEventListener("popstate", () => {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    });
   });
 </script>
 
