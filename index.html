@@ -403,12 +403,28 @@
         window.scrollTo({ top: 0, behavior: "smooth" });
       });
     });
-    // Cuộn lên đầu trang khi bấm Back hoặc Forward
-    window.addEventListener("popstate", () => {
-      window.scrollTo({ top: 0, behavior: "smooth" });
+
+    // Lắng nghe sự kiện Back/Forward trên trình duyệt
+    window.addEventListener("popstate", (event) => {
+      if (event.state && event.state.id) {
+        // Hiển thị nội dung tương ứng mà không tạo lịch sử mới
+        showContentWithoutHistory(event.state.id);
+
+        // Sau khi cập nhật nội dung, cuộn lên đầu trang
+        setTimeout(() => {
+          window.scrollTo({ top: 0, behavior: "smooth" });
+        }, 100);
+      } else {
+        // Trường hợp quay về trang chủ hoặc URL không xác định
+        showContentWithoutHistory('home');
+        setTimeout(() => {
+          window.scrollTo({ top: 0, behavior: "smooth" });
+        }, 100);
+      }
     });
   });
 </script>
+
 
 </body>
 </html>
