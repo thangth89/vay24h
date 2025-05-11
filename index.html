@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vay Online - Giới Thiệu</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .active { font-weight: bold; }
+    </style>
+    <script>
+        function showContent(id) {
+            console.log("Hiển thị nội dung cho:", id);
+            
+            // Ẩn tất cả các phần nội dung
+            const sections = document.querySelectorAll('.content-section');
+            sections.forEach(section => section.classList.add('hidden'));
+            
+            // Hiển thị phần được chọn
+            const selectedSection = document.getElementById(id);
+            if (selectedSection) {
+                selectedSection.classList.remove('hidden');
+            } else {
+                console.error("Không tìm thấy phần nội dung với id:", id);
+            }
+
+            // Cập nhật trạng thái active cho menu
+            const links = document.querySelectorAll('.menu-link');
+            links.forEach(link => link.classList.remove('active'));
+            
+            const activeLink = document.getElementById(id + '-link');
+            if (activeLink) {
+                activeLink.classList.add('active');
+            }
+        }
+        
+        // Hàm tải nội dung tin tức bằng AJAX
+        function loadNews(url, title) {
+            console.log("Đang tải tin tức từ URL:", url);
+            
+            // Hiển thị phần tin tức trước
+            const newsDetailSection = document.getElementById('news-detail');
+            if (!newsDetailSection) {
+                console.error("Không tìm thấy phần news-detail");
+                return false;
+            }
+            
+            // Hiển thị phần chi tiết tin tức
+            const sections = document.querySelectorAll('.content-section');
+            sections.forEach(section => section.classList.add('hidden'));
+            newsDetailSection.classList.remove('hidden');
+            
+            // Cập nhật menu active
+            const links = document.querySelectorAll('.menu-link');
+            links.forEach(link => link.classList.remove('active'));
+            const newsLink = document.getElementById('news-link');
+            if (newsLink) {
+                newsLink.classList.add('active');
+            }
+            
+            // Hiển thị trạng thái đang tải
+            document.getElementById('news-detail-content').innerHTML = 
+                '<div class="flex justify-center items-center h-64"><div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-green-500"></div></div>';
+            
+            // Gửi yêu cầu AJAX
+            fetch(url)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.text();
+                })
+                .then(html => {
+                    console.log("Đã nhận phản hồi từ server");
+                    
+                    // Trích xuất nội dung từ file tin tức
+                    const parser = new DOMParser();
+                    const doc = parser.parseFromString(html, 'text/html');
+                    const content = doc.querySelector('.news-content') || doc.body;
+                    
+                    // Cập nhật nội dung
+                    document.getElementById('news-detail-content').innerHTML = '';
+                    document.getElementById('news-detail-content').appendChild(content.cloneNode(true));
+                    document.getElementById('news-title').textContent = title;
+                    
+                    // Cập nhật URL để hỗ trợ SEO và bookmark
+                    const urlPath = url.split('/').pop();
+                    history.pushState({ url: url, title: title }, title, urlPath);
+                    document.title = title + ' - Vay Online';
+                    
+                    console.log("Đã cập nhật nội dung tin tức thành công");
+                })
+                .catch(error => {
+                    document.getElementById('news-detail-content').innerHTML = 
+                        '<div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded" role="alert">' +
+                        '<p>Không thể tải nội dung tin tức. Vui lòng thử lại sau.</p>' +
+                        '<p>Lỗi: ' + error.message + '</p>' +
+                        '</div>';
+                    console.error('Error loading news:', error);
+                });
+                
+            // Ngăn chặn hành vi mặc định của thẻ a
+            return false;
+        }
+        
+        // Theo dõi sự kiện popstate (khi người dùng nhấn nút back/forward của trình duyệt)
+        window.addEventListener('popstate', function(event) {
+            console.log("Sự kiện popstate được kích hoạt:", event.state);
+            
+            if (event.state && event.state.url) {
+                loadNews(event.state.url, event.state.title);
+            } else {
+                // Quay lại trang danh sách tin tức hoặc trang chủ
+                if (window.location.pathname.endsWith('/') || window.location.pathname.endsWith('index.html')) {
+                    showContent('home');
+                } else {
+                    showContent('news');
+                }
+            }
+        });
+        
+        // Kiểm tra URL khi trang được tải
+        document.addEventListener('DOMContentLoaded', function() {
+            // Mặc định hiển thị trang chủ khi tải trang
+            showContent('home');
+            
+            // Nếu URL chứa đường dẫn tin tức
+            const path = window.location.pathname;
+            if (path.includes('tin') && path.endsWith('.html')) {
+                // Tìm tin tức tương ứng và tải nội dung
+                const newsLinks = document.querySelectorAll('.news-item-link');
+                for (let link of newsLinks) {
+                    if (link.getAttribute('href').endsWith(path)) {
+                        loadNews(link.getAttribute('href'), link.querySelector('h3').textContent);
+                        break;
+                    }
+                }
+            }
+        });
+    </script>
+</head>
+<body class="bg-gray-100">
+    <header class="bg-green-600 text-white p-4 sticky top-0 z-50">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="flex items-center">
+                <img src="https://vayonline.com/wp-content/uploads/2022/11/logo-vayonline.png" alt="Vay Online" class="h-12 mr-4">
+                <h1 class="text-xl font-bold">Vay Online</h1>
+            </div>
+            <nav class="space-x-4">
+                <a id="home-link" href="javascript:void(0);" onclick="showContent('home')" class="menu-link text-white hover:underline">Trang chủ</a>
+                <a id="fastloan-link" href="javascript:void(0);" onclick="showContent('fastloan')" class="menu-link text-white hover:underline">Vay tiền nhanh</a>
+                <a id="credit-link" href="javascript:void(0);" onclick="showContent('credit')" class="menu-link text-white hover:underline">Thẻ tín dụng</a>
+                <a id="news-link" href="javascript:void(0);" onclick="showContent('news')" class="menu-link text-white hover:underline">Tin tức</a>
+            </nav>
+        </div>
+    </header>
+    <main class="container mx-auto p-4 flex">
+        <div class="w-3/4">
+
+            <div id="home" class="content-section">
+                <h2 class="text-2xl font-bold mb-4">Trang Chủ</h2>
+                <p>Chào mừng đến với Vay Online!</p>
+            </div>
+
+            <div id="about" class="content-section hidden">
+                <h2 class="text-2xl font-bold mb-4">Giới Thiệu</h2>
+                <p>Vayonline là website tư vấn tài chính cá nhân và đánh giá các sản phẩm vay tiền online uy tín tại Việt Nam.</p>
+            </div>
+
+            <div id="fastloan" class="content-section hidden">
+                <h2 class="text-2xl font-bold mb-4">Vay Tiền Nhanh</h2>
+                <p>Thông tin vay tiền nhanh tại các đơn vị uy tín.</p>
+            </div>
+
+            <div id="credit" class="content-section hidden">
+                <h2 class="text-2xl font-bold mb-4">Thẻ Tín Dụng</h2>
+                <p>Hướng dẫn mở thẻ tín dụng từ các ngân hàng uy tín.</p>
+            </div>
+
+            <div id="news" class="content-section hidden">
+                <h2 class="text-xl font-semibold mb-4">DANH SÁCH TIN TỨC</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <div class="bg-white p-4 rounded-lg shadow hover:shadow-lg">
+                        <a href="/news/tin1.html" class="news-item-link" onclick="return loadNews(this.href, this.querySelector('h3').textContent)">
+                            <img src="/images/tin1.jpg" alt="Cách vay tiền nhanh online" class="w-full h-40 object-cover rounded mb-2">
+                            <h3 class="text-lg font-bold text-gray-800">Cách vay tiền nhanh online</h3>
+                        </a>
+                    </div>
+                    <div class="bg-white p-4 rounded-lg shadow hover:shadow-lg">
+                        <a href="/news/tin2.html" class="news-item-link" onclick="return loadNews(this.href, this.querySelector('h3').textContent)">
+                            <img src="/images/tin2.jpg" alt="Lợi ích của thẻ tín dụng" class="w-full h-40 object-cover rounded mb-2">
+                            <h3 class="text-lg font-bold text-gray-800">Lợi ích của thẻ tín dụng</h3>
+                        </a>
+                    </div>
+                    <div class="bg-white p-4 rounded-lg shadow hover:shadow-lg">
+                        <a href="/news/tin3.html" class="news-item-link" onclick="return loadNews(this.href, this.querySelector('h3').textContent)">
+                            <img src="/images/tin3.jpg" alt="Mẹo quản lý tài chính cá nhân" class="w-full h-40 object-cover rounded mb-2">
+                            <h3 class="text-lg font-bold text-gray-800">Mẹo quản lý tài chính cá nhân</h3>
+                        </a>
+                    </div>
+                    <div class="bg-white p-4 rounded-lg shadow hover:shadow-lg">
+                        <a href="/news/tin4.html" class="news-item-link" onclick="return loadNews(this.href, this.querySelector('h3').textContent)">
+                            <img src="/images/tin4.jpg" alt="Cập nhật mới nhất về lãi suất" class="w-full h-40 object-cover rounded mb-2">
+                            <h3 class="text-lg font-bold text-gray-800">Cập nhật mới nhất về lãi suất</h3>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Phần hiển thị chi tiết tin tức -->
+            <div id="news-detail" class="content-section hidden">
+                <div class="mb-4">
+                    <a href="javascript:void(0);" onclick="showContent('news'); history.pushState(null, 'Tin tức', window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/') + 1)); return false;" class="text-blue-600 hover:underline flex items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                        </svg>
+                        Quay lại danh sách tin tức
+                    </a>
+                </div>
+                <h2 id="news-title" class="text-2xl font-bold mb-4"></h2>
+                <div id="news-detail-content" class="prose max-w-none"></div>
+            </div>
+
+            <div id="contact" class="content-section hidden">
+                <h2 class="text-2xl font-bold mb-4">Liên Hệ</h2>
+                <p>Địa chỉ: Tòa A4 Vinhomes Golden River, Quận 1, TP. Hồ Chí Minh</p>
+                <p>Điện thoại: 0853 773 399</p>
+            </div>
+
+            <div id="dieukhoan" class="content-section hidden">
+                <h2 class="text-2xl font-bold mb-4">Điều Khoản</h2>
+                <p>Điều khoản sử dụng.</p>
+            </div>
+
+            <div id="chinhsach" class="content-section hidden">
+                <h2 class="text-2xl font-bold mb-4">Chính sách</h2>
+                <p>Đảm bảo chính sách.</p>
+            </div>
+
+        </div>
+        <aside class="w-1/4 pl-4">
+            <h3 class="text-lg font-semibold mb-2">BÀI VIẾT MỚI NHẤT</h3>
+            <ul class="space-y-2">
+                <li><a href="/news/tin2.html" class="news-item-link" onclick="return loadNews(this.href, this.querySelector('h3').textContent) text-blue-600 hover:underline"> Robocash | Hướng dẫn đăng ký vay tiền Robocash</a></li>
+                <li><a href="#" class="text-blue-600 hover:underline">Người cho vay nặng lãi bị bắt, tôi có phải trả số tiền đã vay?</a></li>
+                <li><a href="#" class="text-blue-600 hover:underline">Bẫy vay tiền qua App, tránh xa tín dụng đen</a></li>
+                <li><a href="#" class="text-blue-600 hover:underline">TinVay - Đăng ký vay tiền online nhanh gọn</a></li>
+                <li><a href="#" class="text-blue-600 hover:underline">Thông tin về vay tín chấp giải ngân trong ngày</a></li>
+            </ul>
+        </aside>
+    </main>
+    <footer class="bg-gray-800 text-white py-8">
+    <div class="container mx-auto grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+        <div>
+            <h4 class="text-lg font-semibold mb-2">Về Vayonline.com</h4>
+            <p>Vay Online là một website tư vấn tài chính cá nhân và đánh giá các sản phẩm vay tiền online uy tín tại Việt Nam. Chính thức đi vào hoạt động vào năm 2021.</p>
+        </div>
+        <div>
+            <h4 class="text-lg font-semibold mb-2">Trang thông tin</h4>
+            <ul class="space-y-1">
+                <li><a href="javascript:void(0);" onclick="showContent('about')" class="hover:underline">Giới thiệu vay24.pro.vn</a></li>
+                <li><a href="javascript:void(0);" onclick="showContent('dieukhoan')" class="hover:underline">Điều khoản sử dụng</a></li>
+                <li><a href="javascript:void(0);" onclick="showContent('chinhsach')" class="hover:underline">Chính sách bảo mật</a></li>
+                <li><a href="javascript:void(0);" onclick="showContent('contact')" class="hover:underline">Liên hệ với chúng tôi</a></li>
+            </ul>
+        </div>
+        <div>
+            <h4 class="text-lg font-semibold mb-2">Danh mục bài viết</h4>
+            <ul class="space-y-1">
+                <li><a href="javascript:void(0);" onclick="showContent('fastloan')" class="hover:underline">Vay tiền uy tín</a></li>
+                <li><a href="javascript:void(0);" onclick="showContent('credit')" class="hover:underline">Mở thẻ tín dụng</a></li>
+                <li><a href="javascript:void(0);" onclick="showContent('home')" class="hover:underline">Hướng dẫn cơ bản</a></li>
+                <li><a href="javascript:void(0);" onclick="showContent('news')" class="hover:underline">Tổng hợp tin tức</a></li>
+            </ul>
+        </div>
+    </div>
+    <div class="text-center mt-4 text-gray-400">&copy; 2025 vay24h.pro.vn. All rights reserved.</div>
+</footer>
+</body>
+</html>
