@@ -454,7 +454,7 @@
 
                  <section class="px-4 py-6 ">
     		<h2 class="text-lg md:text-xl font-bold text-center text-green-700 mb-4">MẸO HƯỚNG DẪN VAY TIỀN ONLINE NHANH VÀ MỞ THẺ TÍN DỤNG ONLINE MIỄN PHÍ</h2>
-		   <details class="bg-white p-4 rounded-lg shadow mb-4">
+		   <details id="loan-guide-details" class="bg-white p-4 rounded-lg shadow mb-4">
       		     <summary class="font-semibold cursor-pointer text-green-800">📌 HƯỚNG DẪN ĐĂNG KÍ VAY ONLINE NHANH TỶ LỆ DUYỆT CAO</summary>
  			<h2 class="text-base font-bold text-green-800">💸 Mẹo Đăng Ký Vay Tiền Online Hiệu Quả 2025 Cho Người Mới – Hướng Dẫn Chi Tiết</h2>
 			<p><strong>Vay tiền online 2025</strong> đang là xu hướng phổ biến nhờ quy trình đơn giản, duyệt nhanh và không cần gặp mặt. Tuy nhiên, để <strong>tăng tỷ lệ xét duyệt</strong> thành công, người mới cần nắm rõ một vài mẹo quan trọng dưới đây.</p>
@@ -484,7 +484,7 @@
   			 <li>Vinaphone</li>
 			</ul>
 			<p>Dùng SIM chính chủ giúp xác minh danh tính nhanh hơn, tránh rủi ro bị từ chối hồ sơ do thông tin không khớp.</p>
-			<h2>📱 Hướng dẫn khi mở link từ TikTok, Zalo, Facebook...</h2>
+			<h2 class="text-lg font-semibold text-green-800 mt-6">📱 Hướng dẫn khi mở link từ TikTok, Zalo, Facebook...</h2>
 			<p>Nếu bạn đang dùng điện thoại và mở website qua TikTok, Zalo, Facebook... có thể gặp lỗi như không gửi được form. Để khắc phục:</p>
 			<ol>
   			 <li>Nhấn biểu tượng <strong>ba chấm (⋮)</strong> ở góc trên bên phải ứng dụng.</li>
@@ -497,13 +497,11 @@
         		</div>
 			<p><strong>✅ Mẹo cuối cùng:</strong> Luôn kiểm tra kỹ thông tin trước khi gửi. Ưu tiên chọn <strong>đơn vị cho vay online uy tín</strong> có đánh giá tốt từ cộng đồng!</p>
        			<div class="text-center mt-8">
-        		 <a href="/vay-tien-nhanh" onclick="showContent('fastloan'); return false;" class="hover:underline">
-       			 💰 Vay Online Ngay
-       			 </a>
+        		 <a href="/vay-tien-nhanh" onclick="showContent('fastloan'); return false;" class="hover:underline">💰 Vay Online Ngay</a>
        			</div>
     		</details>
 
-    		<details class="bg-white p-4 rounded-lg shadow mb-4">
+    		<details id="loan-guide-details" class="bg-white p-4 rounded-lg shadow mb-4">
       		   <summary class="font-semibold cursor-pointer text-green-800">📌 HƯỚNG DẪN MỞ THẺ TÍN DỤNG ONLINE MIỄN PHÍ</summary>
       		     <h2 class="text-base font-bold text-green-700 mb-4">💳 Hướng Dẫn Mở Thẻ Tín Dụng Online Dễ Duyệt Cho Người Mới (2025)</h2>
                      <p class="mb-4">Bạn muốn chi tiêu trước, trả tiền sau mà không cần vay nóng? <strong>Thẻ tín dụng</strong> là công cụ tài chính giúp bạn thanh toán linh hoạt, được nhiều ngân hàng hỗ trợ đăng ký dễ dàng – đặc biệt là hình thức mở online. Dưới đây là <strong>hướng dẫn chi tiết từ A-Z</strong> giúp bạn hiểu rõ và mở thẻ tín dụng thành công ngay từ lần đầu.</p>
@@ -555,9 +553,7 @@
     			<li>Ưu đãi khi thanh toán online, ăn uống, du lịch</li>
   		    </ul>
 		    <div class="text-center mt-8">
-    			<a href="/the-tin-dung" onclick="showContent('credit'); return false;" class="hover:underline">
-      			✨ Mở Thẻ Tín Dụng Miễn Phí Ngay
-    			</a>
+    			<a href="/the-tin-dung" onclick="showContent('credit'); return false;" class="hover:underline">✨ Mở Thẻ Tín Dụng Miễn Phí Ngay</a>
   		   </div>
     		</details>
   	      </section>
@@ -983,23 +979,33 @@
       }
     });
   });
-    window.addEventListener('DOMContentLoaded', () => {
-    // Dùng requestAnimationFrame để chạy sau khi browser đã khôi phục trạng thái cũ
-    requestAnimationFrame(() => {
-      document.querySelectorAll('details[open]').forEach(detail => {
-        detail.open = false; // force close
-      });
-    });
 
-    // Scroll mượt khi mở details
-    document.querySelectorAll("details").forEach(detail => {
-      detail.addEventListener("toggle", function () {
-        if (this.open) {
-          this.scrollIntoView({ behavior: "smooth", block: "start" });
-        }
-      });
+  document.addEventListener('DOMContentLoaded', function() {
+  const loanDetailsElement = document.getElementById('loan-guide-details');
+  
+  // Khi trang được tải, đóng details mặc định
+  loanDetailsElement.open = false;
+
+  // Lắng nghe sự kiện toggle của details
+  loanDetailsElement.addEventListener('toggle', function() {
+    // Lưu trạng thái hiện tại vào sessionStorage
+    sessionStorage.setItem('loanDetailsOpen', loanDetailsElement.open);
+  });
+  
+  // Thêm sự kiện khi người dùng sắp rời khỏi trang
+  window.addEventListener('beforeunload', function() {
+    // Đặt trạng thái closed vào sessionStorage khi người dùng back, reload hoặc chuyển sang trang mới
+    sessionStorage.setItem('loanDetailsOpen', 'false');
+  });
+  
+  // Thêm sự kiện khi người dùng click vào các liên kết điều hướng
+  document.querySelectorAll('a[href]:not([href^="#"])').forEach(link => {
+    link.addEventListener('click', function() {
+      // Đặt trạng thái closed vào sessionStorage khi người dùng click vào liên kết
+      sessionStorage.setItem('loanDetailsOpen', 'false');
     });
   });
+});  
 </script>
 
 
