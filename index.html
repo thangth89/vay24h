@@ -964,11 +964,6 @@
       link.addEventListener("click", () => {
         window.scrollTo({ top: 0, behavior: "smooth" });
       });
-
-    // Đóng tất cả các thẻ <details> sau khi load trang
-    document.querySelectorAll('details[open]').forEach(detail => {
-      detail.removeAttribute('open');
-    });
    });
 
     // Lắng nghe sự kiện Back/Forward trên trình duyệt
@@ -991,6 +986,12 @@
     });
   });
 
+    window.addEventListener('DOMContentLoaded', () => {
+    // Đóng tất cả các thẻ <details> sau khi load trang
+    document.querySelectorAll('details[open]').forEach(detail => {
+      detail.removeAttribute('open');
+    });
+  });
 </script>
 
 
