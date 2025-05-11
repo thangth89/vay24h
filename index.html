@@ -561,8 +561,6 @@
   		   </div>
     		</details>
   	      </section>
-
-
             </div>
 
             <div id="about" class="content-section hidden">
@@ -964,7 +962,7 @@
       link.addEventListener("click", () => {
         window.scrollTo({ top: 0, behavior: "smooth" });
       });
-   });
+    });
 
     // Lắng nghe sự kiện Back/Forward trên trình duyệt
     window.addEventListener("popstate", (event) => {
@@ -985,12 +983,12 @@
       }
     });
   });
-
     window.addEventListener('DOMContentLoaded', () => {
-    // Đóng tất cả các thẻ <details> sau khi load trang
-    document.querySelectorAll('details[open]').forEach(detail => {
-      detail.removeAttribute('open');
-    });
+    setTimeout(() => {
+      document.querySelectorAll('details[open]').forEach(detail => {
+        detail.removeAttribute('open');
+      });
+    }, 10); // delay nhỏ giúp đảm bảo trình duyệt đã áp xong trạng thái trước khi ta reset
   });
 </script>
 
