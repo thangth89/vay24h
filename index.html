@@ -146,7 +146,7 @@
             <img src="https://vayonline.com/wp-content/uploads/2022/11/logo-vayonline.png" alt="Vay Online" class="h-12 mb-2 md:mb-0 md:mr-4">
             <h1 class="text-xl md:text-2xl font-bold">Vay Online</h1>
             </div>
-            <nav class="flex flex-wrap justify-center space-x-2 mt-2 md:mt-0">
+            <nav class="flex flex-wrap justify-center space-x-6 mt-2 md:mt-0">
                 <a id="home-link" href="javascript:void(0);" onclick="showContent('home')" class="menu-link text-white hover:underline">Trang chủ</a>
                 <a id="fastloan-link" href="javascript:void(0);" onclick="showContent('fastloan')" class="menu-link text-white hover:underline">Vay tiền nhanh</a>
                 <a id="credit-link" href="javascript:void(0);" onclick="showContent('credit')" class="menu-link text-white hover:underline">Thẻ tín dụng</a>
@@ -282,5 +282,17 @@
     </div>
     <div class="text-center mt-4 text-gray-400">&copy; 2025 vay24h.pro.vn. All rights reserved.</div>
 </footer>
+
+<!-- cuộn về đầu trang -->
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    document.querySelectorAll("nav a, footer a").forEach(link => {
+      link.addEventListener("click", () => {
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      });
+    });
+  });
+</script>
+
 </body>
 </html>
