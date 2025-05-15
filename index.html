@@ -1209,7 +1209,7 @@
 <!-- cuộn về đầu trang -->
 <script>
   document.addEventListener("DOMContentLoaded", () => {
-    document.querySelectorAll("nav a, footer a, div a").forEach(link => {
+    document.querySelectorAll("nav a, footer a, div a, li a").forEach(link => {
       link.addEventListener("click", () => {
         window.scrollTo({ top: 0, behavior: "smooth" });
       });
