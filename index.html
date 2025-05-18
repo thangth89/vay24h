@@ -993,25 +993,22 @@
              </div>
          </div>
 
-            <div id="news" class="content-section hidden">
-                <h2 class="text-xl font-semibold mb-4">DANH SÁCH TIN TỨC</h2>
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-
-		     <div class="bg-white p-4 rounded-lg shadow hover:shadow-lg">
-                        <a href="/news/the-tin-dung-CAKE-by-VPBank.html" class="news-item-link" onclick="return loadNews(this.href, this.querySelector('h3').textContent)">
-                            <img loading="lazy" src="/images/Cake_Freedom.webp" alt="Thẻ Tín Dụng CAKE by VPBank – Tiện Lợi, Nhanh Chóng, Nhiều Ưu Đãi" class="w-full h-40 object-cover rounded mb-2">
-                            <h3 class="text-lg font-bold text-gray-800">Thẻ Tín Dụng CAKE by VPBank – Tiện Lợi, Nhanh Chóng, Nhiều Ưu Đãi</h3>
-                        </a>
-                     </div>
-       
-		     <div class="bg-white p-4 rounded-lg shadow hover:shadow-lg">
-                        <a href="/news/canh-bao-app-vay-tien-tin-dung-den.html" class="news-item-link" onclick="return loadNews(this.href, this.querySelector('h3').textContent)">
-                            <img loading="lazy" src="/images/canh-bao-app-vay-tien-tin-dung-den.webp" alt="Cảnh Báo Tín Dụng Đen Ẩn Mình Trong App Vay Tiền" class="w-full h-40 object-cover rounded mb-2">
-                            <h3 class="text-lg font-bold text-gray-800">Cảnh Báo Tín Dụng Đen Ẩn Mình Trong App Vay Tiền</h3>
-                        </a>
-                    </div>
-                </div>
-            </div>
+	     <!-- HTML cho phần tin tức với phân trang -->
+	     <div id="news" class="content-section hidden">
+    		<h2 class="text-xl font-semibold mb-4">DANH SÁCH TIN TỨC</h2>
+    
+    		<!-- Container chứa tin tức sẽ thay đổi động -->
+    		<div id="news-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        	    <!-- Các tin tức sẽ được load động ở đây -->
+    		</div>
+    
+    		<!-- Các nút điều hướng phân trang -->
+   	        <div class="flex justify-center mt-8">
+        	<div id="pagination-container" class="inline-flex">
+            	<!-- Nút phân trang sẽ được tạo động ở đây -->
+        	</div>
+    	      </div>
+	    </div>
             
             <!-- Phần hiển thị chi tiết tin tức -->
             <div id="news-detail" class="content-section hidden">
@@ -1313,6 +1310,144 @@ document.addEventListener('DOMContentLoaded', function() {
   });
 });
 
+
+// 1. DỮ LIỆU TIN TỨC MẪU - Thay thế bằng dữ liệu của bạn
+        const allNews = [
+            {
+            url: '/news/the-tin-dung-CAKE-by-VPBank.html',
+            image: '/images/Cake_Freedom.webp',
+            title: 'Thẻ Tín Dụng CAKE by VPBank – Tiện Lợi, Nhanh Chóng, Nhiều Ưu Đãi',
+            alt: 'Thẻ Tín Dụng CAKE by VPBank – Tiện Lợi, Nhanh Chóng, Nhiều Ưu Đãi'
+        },
+        {
+            url: '/news/vay-tien-techcombank.html',
+            image: '/images/vay-tien-techcombank.webp',
+            title: 'Cách vay online TechcomBank có thể bạn chưa biết',
+            alt: 'Cách vay online TechcomBank có thể bạn chưa biết'
+        },
+        {
+            url: '/news/vay-tien-techcombank.html',
+            image: '/images/vay-tien-techcombank.webp',
+            title: 'Cách vay online TechcomBank có thể bạn chưa biết',
+            alt: 'Cách vay online TechcomBank có thể bạn chưa biết'
+        },
+         {
+            url: '/news/vay-tien-techcombank.html',
+            image: '/images/vay-tien-techcombank.webp',
+            title: 'Cách vay online TechcomBank có thể bạn chưa biết',
+            alt: 'Cách vay online TechcomBank có thể bạn chưa biết'
+        },
+        {
+            url: '/news/vay-tien-techcombank.html',
+            image: '/images/vay-tien-techcombank.webp',
+            title: 'Cách vay online TechcomBank có thể bạn chưa biết',
+            alt: 'Cách vay online TechcomBank có thể bạn chưa biết'
+        },
+         {
+            url: '/news/vay-tien-techcombank.html',
+            image: '/images/vay-tien-techcombank.webp',
+            title: 'Cách vay online TechcomBank có thể bạn chưa biết',
+            alt: 'Cách vay online TechcomBank có thể bạn chưa biết'
+        },
+         {
+            url: '/news/vay-tien-techcombank.html',
+            image: '/images/vay-tien-techcombank.webp',
+            title: 'Cách vay online TechcomBank có thể bạn chưa biết',
+            alt: 'Cách vay online TechcomBank có thể bạn chưa biết'
+        },
+         {
+            url: '/news/vay-tien-techcombank.html',
+            image: '/images/vay-tien-techcombank.webp',
+            title: 'Cách vay online TechcomBank có thể bạn chưa biết',
+            alt: 'Cách vay online TechcomBank có thể bạn chưa biết'
+        },
+         {
+            url: '/news/vay-tien-techcombank.html',
+            image: '/images/vay-tien-techcombank.webp',
+            title: 'Cách vay online TechcomBank có thể bạn chưa biết',
+            alt: 'Cách vay online TechcomBank có thể bạn chưa biết'
+        },
+         {
+            url: '/news/vay-tien-techcombank.html',
+            image: '/images/vay-tien-techcombank.webp',
+            title: 'Cách vay online TechcomBank có thể bạn chưa biết',
+            alt: 'Cách vay online TechcomBank có thể bạn chưa biết'
+        }
+        ];
+
+        // 2. CẤU HÌNH PHÂN TRANG
+        const newsPerPage = 6; // Số tin tức trên mỗi trang
+        let currentPage = 1;
+        const totalPages = Math.ceil(allNews.length / newsPerPage);
+
+        // 3. HÀM HIỂN THỊ TIN TỨC THEO TRANG
+        function displayNews(page) {
+            const newsContainer = document.getElementById('news-container');
+            newsContainer.innerHTML = '';
+            
+            const startIndex = (page - 1) * newsPerPage;
+            const endIndex = Math.min(startIndex + newsPerPage, allNews.length);
+            
+            for (let i = startIndex; i < endIndex; i++) {
+                const news = allNews[i];
+                const newsItem = document.createElement('div');
+                newsItem.className = 'news-item';
+                
+                newsItem.innerHTML = `
+                    <a href="${news.url}">
+                        <img src="${news.image}" alt="${news.title}">
+                        <h3>${news.title}</h3>
+                    </a>
+                `;
+                
+                newsContainer.appendChild(newsItem);
+            }
+            
+            createPagination(page);
+        }
+
+        // 4. HÀM TẠO CÁC NÚT PHÂN TRANG
+        function createPagination(currentPage) {
+            const paginationContainer = document.getElementById('pagination-container');
+            paginationContainer.innerHTML = '';
+            
+            // Tạo các nút số trang (1, 2, 3...)
+            for (let i = 1; i <= totalPages; i++) {
+                const pageLink = document.createElement('a');
+                pageLink.href = '#';
+                pageLink.textContent = i;
+                
+                if (i === currentPage) {
+                    pageLink.className = 'active';
+                }
+                
+                pageLink.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    displayNews(i);
+                });
+                
+                paginationContainer.appendChild(pageLink);
+            }
+            
+            // Thêm nút "Trang sau »" nếu không phải trang cuối
+            if (currentPage < totalPages) {
+                const nextButton = document.createElement('a');
+                nextButton.href = '#';
+                nextButton.textContent = 'Trang sau »';
+                
+                nextButton.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    displayNews(currentPage + 1);
+                });
+                
+                paginationContainer.appendChild(nextButton);
+            }
+        }
+
+        // 5. KHỞI TẠO TRANG ĐẦU TIÊN KHI TẢI TRANG
+        document.addEventListener('DOMContentLoaded', function() {
+            displayNews(1);
+        });
 </script>
 </body>
 </html>
