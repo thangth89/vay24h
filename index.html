@@ -1310,10 +1310,11 @@ document.addEventListener('DOMContentLoaded', function() {
   });
 });
 
-<!-- Script JavaScript để xử lý phân trang -->
+
 document.addEventListener('DOMContentLoaded', function() {
     // Dữ liệu tin tức - Thay thế bằng dữ liệu tin tức của bạn
     const allNews = [
+        // Danh sách tin tức của bạn ở đây
         {
             url: '/news/the-tin-dung-CAKE-by-VPBank.html',
             image: '/images/Cake_Freedom.webp',
@@ -1321,66 +1322,68 @@ document.addEventListener('DOMContentLoaded', function() {
             alt: 'Thẻ Tín Dụng CAKE by VPBank – Tiện Lợi, Nhanh Chóng, Nhiều Ưu Đãi'
         },
         {
-            url: '/news/canh-bao-app-vay-tien-tin-dung-den.html',
-            image: '/images/canh-bao-app-vay-tien-tin-dung-den.webp',
-            title: 'Cảnh Báo Tín Dụng Đen Ẩn Mình Trong App Vay Tiền',
-            alt: 'Cảnh Báo Tín Dụng Đen Ẩn Mình Trong App Vay Tiền'
-        },
-        // Thêm nhiều tin tức hơn để thử nghiệm phân trang
-        {
-            url: '/news/canh-bao-app-vay-tien-tin-dung-den.html',
-            image: '/images/canh-bao-app-vay-tien-tin-dung-den.webp',
-            title: 'Cảnh Báo Tín Dụng Đen Ẩn Mình Trong App Vay Tiền',
-            alt: 'Cảnh Báo Tín Dụng Đen Ẩn Mình Trong App Vay Tiền'
-        },
-         {
-            url: '/news/canh-bao-app-vay-tien-tin-dung-den.html',
-            image: '/images/canh-bao-app-vay-tien-tin-dung-den.webp',
-            title: 'Cảnh Báo Tín Dụng Đen Ẩn Mình Trong App Vay Tiền',
-            alt: 'Cảnh Báo Tín Dụng Đen Ẩn Mình Trong App Vay Tiền'
+            url: '/news/vay-tien-techcombank.html',
+            image: '/images/vay-tien-techcombank.webp',
+            title: 'Cách vay online TechcomBank có thể bạn chưa biết',
+            alt: 'Cách vay online TechcomBank có thể bạn chưa biết'
         },
         {
-            url: '/news/vay-tien-home-credit.html',
-            image: '/images/vay-tien-home-credit.webp',
-            title: 'Hướng dẫn vay tiền online Home Credit với thủ tục cực dễ bạn nên biết',
-            alt: 'Hướng dẫn vay tiền online Home Credit'
+            url: '/news/vay-tien-techcombank.html',
+            image: '/images/vay-tien-techcombank.webp',
+            title: 'Cách vay online TechcomBank có thể bạn chưa biết',
+            alt: 'Cách vay online TechcomBank có thể bạn chưa biết'
         },
          {
-            url: '/news/canh-bao-app-vay-tien-tin-dung-den.html',
-            image: '/images/canh-bao-app-vay-tien-tin-dung-den.webp',
-            title: 'Cảnh Báo Tín Dụng Đen Ẩn Mình Trong App Vay Tiền',
-            alt: 'Cảnh Báo Tín Dụng Đen Ẩn Mình Trong App Vay Tiền'
+            url: '/news/vay-tien-techcombank.html',
+            image: '/images/vay-tien-techcombank.webp',
+            title: 'Cách vay online TechcomBank có thể bạn chưa biết',
+            alt: 'Cách vay online TechcomBank có thể bạn chưa biết'
+        },
+        {
+            url: '/news/vay-tien-techcombank.html',
+            image: '/images/vay-tien-techcombank.webp',
+            title: 'Cách vay online TechcomBank có thể bạn chưa biết',
+            alt: 'Cách vay online TechcomBank có thể bạn chưa biết'
         },
          {
-            url: '/news/canh-bao-app-vay-tien-tin-dung-den.html',
-            image: '/images/canh-bao-app-vay-tien-tin-dung-den.webp',
-            title: 'Cảnh Báo Tín Dụng Đen Ẩn Mình Trong App Vay Tiền',
-            alt: 'Cảnh Báo Tín Dụng Đen Ẩn Mình Trong App Vay Tiền'
+            url: '/news/vay-tien-techcombank.html',
+            image: '/images/vay-tien-techcombank.webp',
+            title: 'Cách vay online TechcomBank có thể bạn chưa biết',
+            alt: 'Cách vay online TechcomBank có thể bạn chưa biết'
         },
          {
-            url: '/news/canh-bao-app-vay-tien-tin-dung-den.html',
-            image: '/images/canh-bao-app-vay-tien-tin-dung-den.webp',
-            title: 'Cảnh Báo Tín Dụng Đen Ẩn Mình Trong App Vay Tiền',
-            alt: 'Cảnh Báo Tín Dụng Đen Ẩn Mình Trong App Vay Tiền'
+            url: '/news/vay-tien-techcombank.html',
+            image: '/images/vay-tien-techcombank.webp',
+            title: 'Cách vay online TechcomBank có thể bạn chưa biết',
+            alt: 'Cách vay online TechcomBank có thể bạn chưa biết'
         },
          {
-            url: '/news/canh-bao-app-vay-tien-tin-dung-den.html',
-            image: '/images/canh-bao-app-vay-tien-tin-dung-den.webp',
-            title: 'Cảnh Báo Tín Dụng Đen Ẩn Mình Trong App Vay Tiền',
-            alt: 'Cảnh Báo Tín Dụng Đen Ẩn Mình Trong App Vay Tiền'
+            url: '/news/vay-tien-techcombank.html',
+            image: '/images/vay-tien-techcombank.webp',
+            title: 'Cách vay online TechcomBank có thể bạn chưa biết',
+            alt: 'Cách vay online TechcomBank có thể bạn chưa biết'
         },
          {
-            url: '/news/canh-bao-app-vay-tien-tin-dung-den.html',
-            image: '/images/canh-bao-app-vay-tien-tin-dung-den.webp',
-            title: 'Cảnh Báo Tín Dụng Đen Ẩn Mình Trong App Vay Tiền',
-            alt: 'Cảnh Báo Tín Dụng Đen Ẩn Mình Trong App Vay Tiền'
+            url: '/news/vay-tien-techcombank.html',
+            image: '/images/vay-tien-techcombank.webp',
+            title: 'Cách vay online TechcomBank có thể bạn chưa biết',
+            alt: 'Cách vay online TechcomBank có thể bạn chưa biết'
         },
+         {
+            url: '/news/vay-tien-techcombank.html',
+            image: '/images/vay-tien-techcombank.webp',
+            title: 'Cách vay online TechcomBank có thể bạn chưa biết',
+            alt: 'Cách vay online TechcomBank có thể bạn chưa biết'
+        }
     ];
 
     // Cấu hình phân trang
     const newsPerPage = 6; // Số tin tức trên mỗi trang
     let currentPage = 1;
     const totalPages = Math.ceil(allNews.length / newsPerPage);
+
+    // Hiển thị tin tức theo trang
+    displayNewsByPage(currentPage);
 
     // Hàm hiển thị tin tức theo trang hiện tại
     function displayNewsByPage(page) {
@@ -1416,8 +1419,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const paginationControls = document.getElementById('pagination-controls');
         paginationControls.innerHTML = '';
 
-        // Tạo các nút phân trang theo kiểu trang web Vayonline
-        // Thêm các nút trang cụ thể (1, 2, 3, ...)
+        // Tạo các nút trang (1, 2, 3, ...)
         for (let i = 1; i <= Math.min(totalPages, 10); i++) {
             const pageButton = document.createElement('a');
             pageButton.href = '#';
@@ -1460,25 +1462,6 @@ document.addEventListener('DOMContentLoaded', function() {
             paginationControls.appendChild(nextButton);
         }
     }
-
-    // Hàm tạo các nút phân trang
-    function createPaginationButton(text, pageNum) {
-        const button = document.createElement('a');
-        button.href = '#';
-        button.textContent = text;
-        button.className = 'px-4 py-2 mx-1 border border-gray-300 hover:bg-gray-100';
-        
-        button.addEventListener('click', function(e) {
-            e.preventDefault();
-            currentPage = pageNum;
-            displayNewsByPage(currentPage);
-        });
-        
-        return button;
-    }
-
-    // Hiển thị trang đầu tiên khi tải trang
-    displayNewsByPage(currentPage);
 });
 </script>
 </body>
