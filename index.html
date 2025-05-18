@@ -993,25 +993,22 @@
              </div>
          </div>
 
-            <div id="news" class="content-section hidden">
-                <h2 class="text-xl font-semibold mb-4">DANH SÁCH TIN TỨC</h2>
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-
-		     <div class="bg-white p-4 rounded-lg shadow hover:shadow-lg">
-                        <a href="/news/the-tin-dung-CAKE-by-VPBank.html" class="news-item-link" onclick="return loadNews(this.href, this.querySelector('h3').textContent)">
-                            <img loading="lazy" src="/images/Cake_Freedom.webp" alt="Thẻ Tín Dụng CAKE by VPBank – Tiện Lợi, Nhanh Chóng, Nhiều Ưu Đãi" class="w-full h-40 object-cover rounded mb-2">
-                            <h3 class="text-lg font-bold text-gray-800">Thẻ Tín Dụng CAKE by VPBank – Tiện Lợi, Nhanh Chóng, Nhiều Ưu Đãi</h3>
-                        </a>
-                     </div>
-       
-		     <div class="bg-white p-4 rounded-lg shadow hover:shadow-lg">
-                        <a href="/news/canh-bao-app-vay-tien-tin-dung-den.html" class="news-item-link" onclick="return loadNews(this.href, this.querySelector('h3').textContent)">
-                            <img loading="lazy" src="/images/canh-bao-app-vay-tien-tin-dung-den.webp" alt="Cảnh Báo Tín Dụng Đen Ẩn Mình Trong App Vay Tiền" class="w-full h-40 object-cover rounded mb-2">
-                            <h3 class="text-lg font-bold text-gray-800">Cảnh Báo Tín Dụng Đen Ẩn Mình Trong App Vay Tiền</h3>
-                        </a>
-                    </div>
-                </div>
-            </div>
+	     <!-- HTML cho phần tin tức với phân trang -->
+	     <div id="news" class="content-section hidden">
+    		<h2 class="text-xl font-semibold mb-4">DANH SÁCH TIN TỨC</h2>
+    
+    		<!-- Container chứa tin tức sẽ thay đổi động -->
+    		<div id="news-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        	    <!-- Các tin tức sẽ được load động ở đây -->
+    		</div>
+    
+    		<!-- Các nút điều hướng phân trang -->
+   	        <div class="flex justify-center mt-8">
+        	<div id="pagination-controls" class="inline-flex">
+            	<!-- Nút phân trang sẽ được tạo động ở đây -->
+        	</div>
+    	      </div>
+	    </div>
             
             <!-- Phần hiển thị chi tiết tin tức -->
             <div id="news-detail" class="content-section hidden">
@@ -1313,6 +1310,164 @@ document.addEventListener('DOMContentLoaded', function() {
   });
 });
 
+<!-- Script JavaScript để xử lý phân trang -->
+document.addEventListener('DOMContentLoaded', function() {
+    // Dữ liệu tin tức - Thay thế bằng dữ liệu tin tức của bạn
+    const allNews = [
+        {
+            url: '/news/the-tin-dung-CAKE-by-VPBank.html',
+            image: '/images/Cake_Freedom.webp',
+            title: 'Thẻ Tín Dụng CAKE by VPBank – Tiện Lợi, Nhanh Chóng, Nhiều Ưu Đãi',
+            alt: 'Thẻ Tín Dụng CAKE by VPBank – Tiện Lợi, Nhanh Chóng, Nhiều Ưu Đãi'
+        },
+        {
+            url: '/news/canh-bao-app-vay-tien-tin-dung-den.html',
+            image: '/images/canh-bao-app-vay-tien-tin-dung-den.webp',
+            title: 'Cảnh Báo Tín Dụng Đen Ẩn Mình Trong App Vay Tiền',
+            alt: 'Cảnh Báo Tín Dụng Đen Ẩn Mình Trong App Vay Tiền'
+        },
+        // Thêm nhiều tin tức hơn để thử nghiệm phân trang
+        {
+            url: '/news/vay-tien-techcombank.html',
+            image: '/images/vay-tien-techcombank.webp',
+            title: 'Cách vay online TechcomBank có thể bạn chưa biết',
+            alt: 'Cách vay online TechcomBank có thể bạn chưa biết'
+        },
+        {
+            url: '/news/vay-tien-online-nhanh.html',
+            image: '/images/vay-tien-online-nhanh.webp',
+            title: 'Cách vay tiền online nhanh với thủ tục siêu đơn giản mà bạn nên biết',
+            alt: 'Cách vay tiền online nhanh với thủ tục siêu đơn giản'
+        },
+        {
+            url: '/news/vay-tien-home-credit.html',
+            image: '/images/vay-tien-home-credit.webp',
+            title: 'Hướng dẫn vay tiền online Home Credit với thủ tục cực dễ bạn nên biết',
+            alt: 'Hướng dẫn vay tiền online Home Credit'
+        },
+        {
+            url: '/news/vay-tien-theo-bao-hiem-nhan-tho.html',
+            image: '/images/vay-tien-bao-hiem.webp',
+            title: 'Vay tiền theo bảo hiểm nhân thọ: Điều kiện, lãi suất và cách đăng ký',
+            alt: 'Vay tiền theo bảo hiểm nhân thọ'
+        },
+        {
+            url: '/news/vay-tien-online-shb.html',
+            image: '/images/vay-tien-online-shb.webp',
+            title: 'Vay tiền online SHB Consumer Finance với lãi suất chỉ từ 1.2%/tháng',
+            alt: 'Vay tiền online SHB Consumer Finance'
+        },
+        {
+            url: '/news/vay-tien-ocb-omni.html',
+            image: '/images/vay-tien-ocb-omni.webp',
+            title: 'Vay tiền OCB OMNI - Giải ngân nhanh chỉ với CMND/CCCD',
+            alt: 'Vay tiền OCB OMNI'
+        }
+    ];
+
+    // Cấu hình phân trang
+    const newsPerPage = 6; // Số tin tức trên mỗi trang
+    let currentPage = 1;
+    const totalPages = Math.ceil(allNews.length / newsPerPage);
+
+    // Hàm hiển thị tin tức theo trang hiện tại
+    function displayNewsByPage(page) {
+        const newsContainer = document.getElementById('news-container');
+        newsContainer.innerHTML = ''; // Xóa nội dung cũ
+
+        // Tính toán chỉ mục bắt đầu và kết thúc cho trang hiện tại
+        const startIndex = (page - 1) * newsPerPage;
+        const endIndex = Math.min(startIndex + newsPerPage, allNews.length);
+
+        // Hiển thị tin tức của trang hiện tại
+        for (let i = startIndex; i < endIndex; i++) {
+            const news = allNews[i];
+            const newsElement = document.createElement('div');
+            newsElement.className = 'bg-white p-4 rounded-lg shadow hover:shadow-lg';
+            
+            newsElement.innerHTML = `
+                <a href="${news.url}" class="news-item-link" onclick="return loadNews(this.href, this.querySelector('h3').textContent)">
+                    <img loading="lazy" src="${news.image}" alt="${news.alt}" class="w-full h-40 object-cover rounded mb-2">
+                    <h3 class="text-lg font-bold text-gray-800">${news.title}</h3>
+                </a>
+            `;
+            
+            newsContainer.appendChild(newsElement);
+        }
+
+        // Cập nhật nút điều hướng phân trang
+        updatePaginationControls();
+    }
+
+    // Hàm cập nhật các nút điều hướng phân trang
+    function updatePaginationControls() {
+        const paginationControls = document.getElementById('pagination-controls');
+        paginationControls.innerHTML = '';
+
+        // Tạo các nút phân trang theo kiểu trang web Vayonline
+        // Thêm các nút trang cụ thể (1, 2, 3, ...)
+        for (let i = 1; i <= Math.min(totalPages, 10); i++) {
+            const pageButton = document.createElement('a');
+            pageButton.href = '#';
+            pageButton.textContent = i;
+            pageButton.className = 'px-4 py-2 mx-1 border border-gray-300 hover:bg-gray-100';
+            
+            // Đánh dấu trang hiện tại
+            if (i === currentPage) {
+                pageButton.className = 'px-4 py-2 mx-1 border border-gray-300 bg-red-500 text-white';
+            }
+            
+            pageButton.addEventListener('click', function(e) {
+                e.preventDefault();
+                currentPage = i;
+                displayNewsByPage(currentPage);
+            });
+            
+            paginationControls.appendChild(pageButton);
+        }
+
+        // Thêm nút "..." nếu có nhiều trang
+        if (totalPages > 10) {
+            const ellipsis = document.createElement('span');
+            ellipsis.textContent = '...';
+            ellipsis.className = 'px-3 py-2 mx-1';
+            paginationControls.appendChild(ellipsis);
+        }
+
+        // Thêm nút "Trang sau »" nếu không phải trang cuối
+        if (currentPage < totalPages) {
+            const nextButton = document.createElement('a');
+            nextButton.href = '#';
+            nextButton.textContent = 'Trang sau »';
+            nextButton.className = 'px-4 py-2 mx-1 border border-gray-300 hover:bg-gray-100';
+            nextButton.addEventListener('click', function(e) {
+                e.preventDefault();
+                currentPage++;
+                displayNewsByPage(currentPage);
+            });
+            paginationControls.appendChild(nextButton);
+        }
+    }
+
+    // Hàm tạo các nút phân trang
+    function createPaginationButton(text, pageNum) {
+        const button = document.createElement('a');
+        button.href = '#';
+        button.textContent = text;
+        button.className = 'px-4 py-2 mx-1 border border-gray-300 hover:bg-gray-100';
+        
+        button.addEventListener('click', function(e) {
+            e.preventDefault();
+            currentPage = pageNum;
+            displayNewsByPage(currentPage);
+        });
+        
+        return button;
+    }
+
+    // Hiển thị trang đầu tiên khi tải trang
+    displayNewsByPage(currentPage);
+});
 </script>
 </body>
 </html>
