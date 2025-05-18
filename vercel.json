@@ -1,23 +1,6 @@
 {
   "rewrites": [
     { "source": "/(.*)", "destination": "/" }
-  ],
-  "redirects": [
-    {
-      "source": "http://vay24h.pro.vn/(.*)",
-      "destination": "https://vay24h.pro.vn/$1",
-      "permanent": true
-    },
-    {
-      "source": "http://www.vay24h.pro.vn/(.*)",
-      "destination": "https://vay24h.pro.vn/$1",
-      "permanent": true
-    },
-    {
-      "source": "https://www.vay24h.pro.vn/(.*)",
-      "destination": "https://vay24h.pro.vn/$1",
-      "permanent": true
-    }
   ]
 }
 
