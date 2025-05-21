@@ -1056,17 +1056,19 @@
 document.addEventListener("DOMContentLoaded", () => {
   document.querySelectorAll("a").forEach(link => {
     link.addEventListener("click", (e) => {
-      // Nếu link có target="_blank" hoặc data-no-scroll thì không cuộn
+      // Nếu đã bị chặn bởi onclick="...; return false;"
+      if (e.defaultPrevented) return;
+
+      // Nếu target="_blank" hoặc có data-no-scroll thì bỏ qua
       if (link.target === "_blank" || link.hasAttribute("data-no-scroll")) return;
 
-      // Nếu có href bắt đầu bằng "#" (anchor), cũng không cần scrollTo
       const href = link.getAttribute("href");
       if (href && href.startsWith("#")) return;
 
-      // Nếu có onclick="showContent(...)" thì để nguyên chức năng đó
+      // Nếu link dùng showContent, đừng xử lý ở đây nữa
       if (link.getAttribute("onclick")?.includes("showContent")) return;
 
-      // Mọi trường hợp còn lại sẽ cuộn mượt lên đầu
+      // Cuộn mượt
       window.scrollTo({ top: 0, behavior: "smooth" });
     });
   });
