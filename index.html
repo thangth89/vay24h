@@ -1053,18 +1053,29 @@
 <!-- cuộn về đầu trang -->
 <script>
 
-document.addEventListener("DOMContentLoaded", () => {
-  // Chọn tất cả liên kết không có class "no-scroll"
-  document.querySelectorAll("a:not(.no-scroll)").forEach(link => {
-    // Thêm event listener riêng biệt cho sự kiện click
-    link.addEventListener("click", function(event) {
-      // Chỉ cuộn lên đầu trang sau khi các hàm xử lý khác đã hoàn thành
-      setTimeout(() => {
+document.addEventListener("DOMContentLoaded", function() {
+  // Tìm tất cả các liên kết trong menu navigation
+  const menuLinks = document.querySelectorAll("nav.flex a.menu-link");
+  
+  // Xử lý riêng cho menu
+  menuLinks.forEach(function(link) {
+    // Lắng nghe sự kiện click
+    link.addEventListener("click", function() {
+      // Thêm timeout để đảm bảo showContent đã được thực thi
+      setTimeout(function() {
         window.scrollTo({ top: 0, behavior: "smooth" });
-      }, 50);
-      
-      // Không ngăn chặn hành vi mặc định hoặc các event handler khác
-    }, false); // Đặt useCapture = false để đảm bảo xử lý sau các handler gốc
+      }, 100);
+    });
+  });
+  
+  // Xử lý cho các liên kết khác, loại trừ liên kết có class no-scroll
+  const otherLinks = document.querySelectorAll("a:not(.menu-link):not(.no-scroll)");
+  otherLinks.forEach(function(link) {
+    link.addEventListener("click", function() {
+      setTimeout(function() {
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }, 100);
+    });
   });
 });
 
