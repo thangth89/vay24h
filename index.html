@@ -1053,20 +1053,27 @@
 <!-- cuộn về đầu trang -->
 <script>
 
-document.addEventListener("DOMContentLoaded", function() {
-  // Tìm tất cả các liên kết trong menu navigation
-  const menuLinks = document.querySelectorAll("nav.flex a.menu-link");
-  
-  // Xử lý riêng cho menu
-  menuLinks.forEach(function(link) {
-    // Lắng nghe sự kiện click
-    link.addEventListener("click", function() {
-      // Thêm timeout để đảm bảo showContent đã được thực thi
-      setTimeout(function() {
-        window.scrollTo({ top: 0, behavior: "smooth" });
-      }, 100);
-    });
-  });
+// Chờ trang web tải xong
+window.onload = function() {
+  // Định nghĩa hàm cuộn lên đầu trang
+  function scrollToTop() {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
+  // Thêm sự kiện click cho tất cả liên kết trừ những liên kết được đánh dấu
+  const allLinks = document.getElementsByTagName("a");
+  for (let i = 0; i < allLinks.length; i++) {
+    const link = allLinks[i];
+    
+    // Bỏ qua liên kết có class no-scroll hoặc href chứa "shorten.asia"
+    if (!link.classList.contains("no-scroll") && !link.href.includes("shorten.asia")) {
+      link.addEventListener("click", function() {
+        // Cuộn sau một khoảng thời gian ngắn
+        setTimeout(scrollToTop, 100);
+      });
+    }
+  }
+};
   
   // Xử lý cho các liên kết khác, loại trừ liên kết có class no-scroll
   const otherLinks = document.querySelectorAll("a:not(.menu-link):not(.no-scroll)");
