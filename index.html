@@ -1054,12 +1054,27 @@
 <script>
 
 document.addEventListener("DOMContentLoaded", () => {
-  document.querySelectorAll("nav a, footer a, div a, li a, ul a").forEach(link => {
-    if (!link.classList.contains("no-scroll") && !link.getAttribute("onclick")) {
-      link.addEventListener("click", () => {
+  // Chọn tất cả liên kết trừ những liên kết có class "no-scroll"
+  document.querySelectorAll("a:not(.no-scroll)").forEach(link => {
+    // Lưu trữ sự kiện onclick gốc
+    const originalOnClick = link.onclick;
+    
+    link.onclick = function(event) {
+      // Gọi sự kiện click gốc nếu có
+      if (originalOnClick) {
+        const result = originalOnClick.call(this, event);
+        // Nếu sự kiện gốc trả về false, không thực hiện thêm
+        if (result === false) return false;
+      }
+      
+      // Thêm hiệu ứng cuộn
+      setTimeout(() => {
         window.scrollTo({ top: 0, behavior: "smooth" });
-      });
-    }
+      }, 10);
+      
+      // Không ngăn chặn hành vi mặc định nếu không có hàm onclick gốc
+      return true;
+    };
   });
 });
 
