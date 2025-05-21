@@ -1054,11 +1054,15 @@
 <script>
 
 document.addEventListener("DOMContentLoaded", () => {
-    document.querySelectorAll("nav a, footer a, div a, li a, ul a").forEach(link => {
+  document.querySelectorAll("nav a, footer a, div a, li a, ul a").forEach(link => {
+    // Kiểm tra nếu liên kết không có class "no-scroll"
+    if (!link.classList.contains("no-scroll")) {
       link.addEventListener("click", () => {
         window.scrollTo({ top: 0, behavior: "smooth" });
       });
-    });
+    }
+  });
+});
 
     // Lắng nghe sự kiện Back/Forward trên trình duyệt
     window.addEventListener("popstate", (event) => {
