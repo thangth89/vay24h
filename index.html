@@ -1054,29 +1054,20 @@
 <script>
 
 document.addEventListener("DOMContentLoaded", () => {
-  // Chọn tất cả liên kết trừ những liên kết có class "no-scroll"
+  // Chọn tất cả liên kết không có class "no-scroll"
   document.querySelectorAll("a:not(.no-scroll)").forEach(link => {
-    // Lưu trữ sự kiện onclick gốc
-    const originalOnClick = link.onclick;
-    
-    link.onclick = function(event) {
-      // Gọi sự kiện click gốc nếu có
-      if (originalOnClick) {
-        const result = originalOnClick.call(this, event);
-        // Nếu sự kiện gốc trả về false, không thực hiện thêm
-        if (result === false) return false;
-      }
-      
-      // Thêm hiệu ứng cuộn
+    // Thêm event listener riêng biệt cho sự kiện click
+    link.addEventListener("click", function(event) {
+      // Chỉ cuộn lên đầu trang sau khi các hàm xử lý khác đã hoàn thành
       setTimeout(() => {
         window.scrollTo({ top: 0, behavior: "smooth" });
-      }, 10);
+      }, 50);
       
-      // Không ngăn chặn hành vi mặc định nếu không có hàm onclick gốc
-      return true;
-    };
+      // Không ngăn chặn hành vi mặc định hoặc các event handler khác
+    }, false); // Đặt useCapture = false để đảm bảo xử lý sau các handler gốc
   });
 });
+
 
     // Lắng nghe sự kiện Back/Forward trên trình duyệt
     window.addEventListener("popstate", (event) => {
