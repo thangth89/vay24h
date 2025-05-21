@@ -695,23 +695,6 @@
       			<button class="bg-green-600 text-white font-semibold py-2 px-4 w-full rounded hover:bg-green-700 transition">VAY ONLINE NGAY</button>
     			</a>
     		      </div>
-		      <div class="bg-white p-4 rounded-lg shadow border border-green-100 relative card-with-new-label">
-  			<img loading="lazy" src="images\homecredit.webp" class="w-24 mx-auto my-2 rounded-lg border border-green-300 p-1">
-  			<h3 class="text-lg font-semibold text-center text-green-700">HOME CREDIT</h3>
-  			<p class="text-center text-sm text-green-600 font-medium">📌 10 PHÚT CÓ TIỀN</p>
-  			<p class="text-center text-lg font-bold text-green-700">10.000.000 – 200.000.000</p>
-  			<ul class="text-sm mt-2 list-disc list-inside text-green-800">
-    			<li>Thời hạn vay: 6 – 57 tháng.</li>
-    			<li>Lãi suất:từ 0,65%/tháng.</li>
-    			<li>Xét duyệt online 3 phút.</li>
-    			<li>Vay < 100tr không cần chứng minh thu nhập.</li>
-    			<li>Hồ sơ: Ưu tiên khách hàng vay cũ Home Credit.</li>
-  			</ul>
-  			<br>
-    			<a href="https://riofin.asia/L9s5b30" rel="nofollow sponsored" target="_blank">
-      			<button class="bg-green-600 text-white font-semibold py-2 px-4 w-full rounded hover:bg-green-700 transition">VAY ONLINE NGAY</button>
-    			</a>
-    		      </div>
 		 </div>
             </div>
 
@@ -1070,11 +1053,13 @@
 <!-- cuộn về đầu trang -->
 <script>
   document.addEventListener("DOMContentLoaded", () => {
-    document.querySelectorAll("nav a, footer a, div a, li a, ul a").forEach(link => {
-      link.addEventListener("click", () => {
-        window.scrollTo({ top: 0, behavior: "smooth" });
-      });
+  document.querySelectorAll("nav a, footer a, div a, li a, ul a").forEach(link => {
+    link.addEventListener("click", (e) => {
+      if (link.dataset.noScroll !== undefined) return; // nếu có thuộc tính data-no-scroll thì bỏ qua
+      window.scrollTo({ top: 0, behavior: "smooth" });
     });
+  });
+});
 
     // Lắng nghe sự kiện Back/Forward trên trình duyệt
     window.addEventListener("popstate", (event) => {
