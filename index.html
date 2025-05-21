@@ -1053,36 +1053,12 @@
 <!-- cuộn về đầu trang -->
 <script>
 
-
-// Lưu trữ hàm showContent gốc
-const originalShowContent = window.showContent;
-
-// Thay thế bằng phiên bản mới có thêm chức năng cuộn
-window.showContent = function(contentId) {
-  // Gọi hàm gốc với các tham số tương tự
-  const result = originalShowContent(contentId);
-  
-  // Thêm chức năng cuộn lên đầu trang
-  window.scrollTo({ top: 0, behavior: "smooth" });
-  
-  // Trả về kết quả của hàm gốc
-  return result;
-};
-
-// Xử lý cho các liên kết thông thường (không phải menu)
-document.addEventListener("DOMContentLoaded", function() {
-  // Chỉ xử lý các liên kết không có onclick và không có class no-scroll
-  const regularLinks = document.querySelectorAll("a:not([onclick]):not(.no-scroll)");
-  
-  regularLinks.forEach(function(link) {
-    link.addEventListener("click", function() {
-      setTimeout(function() {
+document.addEventListener("DOMContentLoaded", () => {
+    document.querySelectorAll("nav a, footer a, div a, li a, ul a").forEach(link => {
+      link.addEventListener("click", () => {
         window.scrollTo({ top: 0, behavior: "smooth" });
-      }, 100);
+      });
     });
-  });
-});
-
 
     // Lắng nghe sự kiện Back/Forward trên trình duyệt
     window.addEventListener("popstate", (event) => {
