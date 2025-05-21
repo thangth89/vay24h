@@ -1054,11 +1054,23 @@
 <script>
 
 document.addEventListener("DOMContentLoaded", () => {
-    document.querySelectorAll("nav a, footer a, div a, li a, ul a").forEach(link => {
-      link.addEventListener("click", () => {
-        window.scrollTo({ top: 0, behavior: "smooth" });
-      });
+  document.querySelectorAll("a").forEach(link => {
+    link.addEventListener("click", (e) => {
+      // Nếu link có target="_blank" hoặc data-no-scroll thì không cuộn
+      if (link.target === "_blank" || link.hasAttribute("data-no-scroll")) return;
+
+      // Nếu có href bắt đầu bằng "#" (anchor), cũng không cần scrollTo
+      const href = link.getAttribute("href");
+      if (href && href.startsWith("#")) return;
+
+      // Nếu có onclick="showContent(...)" thì để nguyên chức năng đó
+      if (link.getAttribute("onclick")?.includes("showContent")) return;
+
+      // Mọi trường hợp còn lại sẽ cuộn mượt lên đầu
+      window.scrollTo({ top: 0, behavior: "smooth" });
     });
+  });
+});
 
     // Lắng nghe sự kiện Back/Forward trên trình duyệt
     window.addEventListener("popstate", (event) => {
