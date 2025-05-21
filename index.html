@@ -261,10 +261,10 @@
             <h1 class="text-xl md:text-2xl font-bold">Giải pháp tài chính linh hoạt</h1>
             </div>
             <nav class="flex flex-nowrap overflow-x-auto justify-center space-x-6 mt-2 md:mt-0">
-                <a id="home-link" href="/" onclick="showContent('home'); return false;" class="menu-link text-white hover:underline scroll-top">Trang chủ</a>
-                <a id="fastloan-link" href="/vay-tien-nhanh" onclick="showContent('fastloan'); return false;" class="menu-link text-white hover:underline ">Vay tiền nhanh</a>
-                <a id="credit-link" href="/the-tin-dung" onclick="showContent('credit'); return false;" class="menu-link text-white hover:underline ">Thẻ tín dụng</a>
-                <a id="news-link" href="/tin-tuc" onclick="showContent('news'); return false;" class="menu-link text-white hover:underline ">Tin tức</a>
+                <a id="home-link" href="/" onclick="showContent('home'); return false;" class="menu-link text-white hover:underline">Trang chủ</a>
+                <a id="fastloan-link" href="/vay-tien-nhanh" onclick="showContent('fastloan'); return false;" class="menu-link text-white hover:underline">Vay tiền nhanh</a>
+                <a id="credit-link" href="/the-tin-dung" onclick="showContent('credit'); return false;" class="menu-link text-white hover:underline">Thẻ tín dụng</a>
+                <a id="news-link" href="/tin-tuc" onclick="showContent('news'); return false;" class="menu-link text-white hover:underline">Tin tức</a>
             </nav>
         </div>
     </header>
@@ -1053,36 +1053,12 @@
 <!-- cuộn về đầu trang -->
 <script>
 
-// Thêm biến toàn cục để kiểm soát hành vi cuộn
-window.noScrollLinks = ["credit"]; // Danh sách các ID liên kết không cần cuộn
-window.noScrollUrls = ["shorten.asia"]; // Danh sách các URL không cần cuộn (có thể chứa một phần của URL)
-window.noScrollAttributes = ["target=_blank", "rel=nofollow"]; // Danh sách các thuộc tính để xác định liên kết không cần cuộn
-
-// Sửa đổi event listener của bạn cho việc cuộn
 document.addEventListener("DOMContentLoaded", () => {
-    document.querySelectorAll("nav a, footer a, div a, li a").forEach(link => {
-        link.addEventListener("click", (event) => {
-            // Lấy các thông tin của liên kết
-            const linkId = link.id ? link.id.replace('-link', '') : '';
-            const linkHref = link.href || '';
-            const isExternalLink = link.target === '_blank';
-            const hasNoFollow = link.rel && link.rel.includes('nofollow');
-            
-            // Kiểm tra các điều kiện để quyết định không cuộn
-            const isNoScrollById = window.noScrollLinks.includes(linkId);
-            const isNoScrollByUrl = window.noScrollUrls.some(url => linkHref.includes(url));
-            const isNoScrollByAttribute = isExternalLink || hasNoFollow;
-            
-            // Nếu liên kết không thuộc bất kỳ danh sách nào không cuộn, thì mới cuộn
-            if (!isNoScrollById && !isNoScrollByUrl && !isNoScrollByAttribute) {
-                // Thêm setTimeout để đảm bảo cuộn sau khi nội dung đã được tải
-                setTimeout(() => {
-                    window.scrollTo({ top: 0, behavior: "smooth" });
-                }, 50);
-            }
-        });
+    document.querySelectorAll("nav a, footer a, div a, li a, ul a").forEach(link => {
+      link.addEventListener("click", () => {
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      });
     });
-});
 
     // Lắng nghe sự kiện Back/Forward trên trình duyệt
     window.addEventListener("popstate", (event) => {
