@@ -216,7 +216,42 @@
       box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* thêm đổ bóng nhẹ nếu muốn */
     }
     
-    </style>
+/* Định dạng mặc định cho nội dung tin tức được load động */
+#news-detail-content ul {
+  list-style-type: disc;
+  padding-left: 1.25rem;
+  margin-bottom: 1rem;
+}
+
+#news-detail-content ol {
+  list-style-type: decimal;
+  padding-left: 1.25rem;
+  margin-bottom: 1rem;
+}
+
+#news-detail-content li {
+  margin-bottom: 0.5rem;
+}
+
+#news-detail-content b,
+#news-detail-content strong {
+  font-weight: bold;
+}
+
+#news-detail-content table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 1rem;
+}
+
+#news-detail-content th,
+#news-detail-content td {
+  border: 1px solid #ccc;
+  padding: 0.5rem;
+  text-align: left;
+}
+
+</style>
 </head>
 <body class="bg-gray-100">
     <header class="bg-green-600 text-white p-4 sticky top-0 z-50">
@@ -756,6 +791,20 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
 
 		     <div class="bg-white p-4 rounded-lg shadow hover:shadow-lg">
+                        <a href="/news/vay-app-den-la-gi.html" class="news-item-link" onclick="return loadNews(this.href, this.querySelector('h3').textContent)">
+                            <img loading="lazy" src="/images/vay-app-den-la-gi.webp" alt="Vay App Đen Là Gì? Vì Sao Nên Tránh Xa Các App Vay Tiền Đen?" class="w-full h-40 object-cover rounded mb-2">
+                            <h3 class="text-lg font-bold text-gray-800">Vay App Đen Là Gì? Vì Sao Nên Tránh Xa Các App Vay Tiền Đen?</h3>
+                        </a>
+                     </div>
+
+		     <div class="bg-white p-4 rounded-lg shadow hover:shadow-lg">
+                        <a href="/news/vayvnd-danh-gia-2025.html" class="news-item-link" onclick="return loadNews(this.href, this.querySelector('h3').textContent)">
+                            <img loading="lazy" src="/images/vayvnd-danh-gia-2025.webp" alt="VayVND là gì? Đánh giá chi tiết ứng dụng vay tiền online VayVND 2025" class="w-full h-40 object-cover rounded mb-2">
+                            <h3 class="text-lg font-bold text-gray-800">VayVND là gì? Đánh giá chi tiết ứng dụng vay tiền online VayVND 2025</h3>
+                        </a>
+                     </div>
+
+		     <div class="bg-white p-4 rounded-lg shadow hover:shadow-lg">
                         <a href="/news/the-tin-dung-CAKE-by-VPBank.html" class="news-item-link" onclick="return loadNews(this.href, this.querySelector('h3').textContent)">
                             <img loading="lazy" src="/images/Cake_Freedom.webp" alt="Thẻ Tín Dụng CAKE by VPBank – Tiện Lợi, Nhanh Chóng, Nhiều Ưu Đãi" class="w-full h-40 object-cover rounded mb-2">
                             <h3 class="text-lg font-bold text-gray-800">Thẻ Tín Dụng CAKE by VPBank – Tiện Lợi, Nhanh Chóng, Nhiều Ưu Đãi</h3>
@@ -951,6 +1000,24 @@
     	 <h3 class="text-lg font-semibold mb-4">BÀI VIẾT MỚI NHẤT</h3>
     	 <ul class="space-y-4">
 
+         <li class="flex items-center gap-3">
+            <img loading="lazy" src="/images/vay-app-den-la-gi.webp" alt="Vay App Đen Là Gì? Vì Sao Nên Tránh Xa Các App Vay Tiền Đen?" class="w-16 h-12 object-cover rounded" />
+            <a href="/news/vay-app-den-la-gi.html"
+                class="text-blue-600 hover:underline flex-1"
+                onclick="return loadNews(this.href, 'Vay App Đen Là Gì? Vì Sao Nên Tránh Xa Các App Vay Tiền Đen?')">
+                Vay App Đen Là Gì? Vì Sao Nên Tránh Xa Các App Vay Tiền Đen?
+            </a>
+         </li>
+
+         <li class="flex items-center gap-3">
+            <img loading="lazy" src="/images/vayvnd-danh-gia-2025.webp" alt="VayVND là gì? Đánh giá chi tiết ứng dụng vay tiền online VayVND 2025" class="w-16 h-12 object-cover rounded" />
+            <a href="/news/vayvnd-danh-gia-2025.html"
+                class="text-blue-600 hover:underline flex-1"
+                onclick="return loadNews(this.href, 'VayVND là gì? Đánh giá chi tiết ứng dụng vay tiền online VayVND 2025')">
+                VayVND là gì? Đánh giá chi tiết ứng dụng vay tiền online VayVND 2025
+            </a>
+         </li>
+
 	  <li class="flex items-center gap-3">
             <img loading="lazy" src="/images/Cake_Freedom.webp" alt="Thẻ Tín Dụng CAKE by VPBank – Tiện Lợi, Nhanh Chóng, Nhiều Ưu Đãi" class="w-16 h-12 object-cover rounded" />
             <a href="/news/the-tin-dung-CAKE-by-VPBank.html"
@@ -1003,7 +1070,7 @@
 <!-- cuộn về đầu trang -->
 <script>
   document.addEventListener("DOMContentLoaded", () => {
-    document.querySelectorAll("nav a, footer a, div a, li a").forEach(link => {
+    document.querySelectorAll("nav a, footer a, div a, li a, ul a").forEach(link => {
       link.addEventListener("click", () => {
         window.scrollTo({ top: 0, behavior: "smooth" });
       });
