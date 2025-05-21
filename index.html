@@ -1341,7 +1341,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
-// Phân Trang với URL động
+// Phân Trang với URL động và tối ưu SEO
 document.addEventListener('DOMContentLoaded', function() {
     // Kiểm tra xem container tin tức có tồn tại không
     const newsContainer = document.querySelector('#news .grid');
@@ -1409,11 +1409,69 @@ document.addEventListener('DOMContentLoaded', function() {
             document.title = pageTitle;
         }
         
+        // Cập nhật thẻ meta description cho SEO
+        updateMetaDescription(page);
+        
+        // Cập nhật thẻ canonical
+        updateCanonicalLink(page);
+        
         // Cuộn lên đầu phần tin tức
         document.getElementById('news').scrollIntoView({ behavior: 'smooth' });
     }
+    
+    // Hàm cập nhật thẻ meta description cho SEO
+    function updateMetaDescription(page) {
+        let metaDescription = document.querySelector('meta[name="description"]');
+        if (!metaDescription) {
+            metaDescription = document.createElement('meta');
+            metaDescription.setAttribute('name', 'description');
+            document.head.appendChild(metaDescription);
+        }
+        
+        const descriptionText = `Tin tức mới nhất về vay trực tuyến - Trang ${page} - Cập nhật thông tin lãi suất, điều kiện vay và các chương trình ưu đãi mới nhất.`;
+        metaDescription.setAttribute('content', descriptionText);
+    }
+    
+    // Hàm cập nhật thẻ canonical
+    function updateCanonicalLink(page) {
+        // Xóa canonical cũ nếu có
+        const existingCanonical = document.querySelector('link[rel="canonical"]');
+        if (existingCanonical) {
+            existingCanonical.remove();
+        }
+        
+        // Tạo canonical mới
+        const canonicalUrl = window.location.origin + (page === 1 ? '/tin-tuc' : `/tin-tuc/trang-${page}`);
+        const canonicalLink = document.createElement('link');
+        canonicalLink.rel = 'canonical';
+        canonicalLink.href = canonicalUrl;
+        document.head.appendChild(canonicalLink);
+    }
+    
+    // Thêm các liên kết rel="prev" và rel="next" cho việc phân trang SEO
+    function updatePrevNextLinks(page) {
+        // Xóa các liên kết cũ
+        const existingLinks = document.querySelectorAll('link[rel="prev"], link[rel="next"]');
+        existingLinks.forEach(link => link.remove());
+        
+        // Thêm liên kết "prev" nếu không phải trang đầu tiên
+        if (page > 1) {
+            const prevLink = document.createElement('link');
+            prevLink.rel = 'prev';
+            prevLink.href = window.location.origin + (page === 2 ? '/tin-tuc' : `/tin-tuc/trang-${page - 1}`);
+            document.head.appendChild(prevLink);
+        }
+        
+        // Thêm liên kết "next" nếu không phải trang cuối cùng
+        if (page < totalPages) {
+            const nextLink = document.createElement('link');
+            nextLink.rel = 'next';
+            nextLink.href = window.location.origin + `/tin-tuc/trang-${page + 1}`;
+            document.head.appendChild(nextLink);
+        }
+    }
 
-    // Hàm tạo các nút phân trang với Tailwind CSS
+    // Hàm tạo các nút phân trang với Tailwind CSS và tối ưu SEO
     function createPagination(currentPage) {
         // Xóa phân trang cũ
         paginationContainer.innerHTML = '';
@@ -1423,12 +1481,17 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
         
+        // Cập nhật thẻ prev/next cho SEO
+        updatePrevNextLinks(currentPage);
+        
         // Tạo nút "Trước" nếu không phải trang đầu tiên
         if (currentPage > 1) {
             const prevButton = document.createElement('a');
-            prevButton.href = '#news';
+            const prevUrl = currentPage === 2 ? '/tin-tuc' : `/tin-tuc/trang-${currentPage - 1}`;
+            prevButton.href = prevUrl;
             prevButton.className = 'px-3 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300 transition';
             prevButton.textContent = 'Trước';
+            prevButton.setAttribute('rel', 'prev');
             
             prevButton.addEventListener('click', function(e) {
                 e.preventDefault();
@@ -1438,14 +1501,17 @@ document.addEventListener('DOMContentLoaded', function() {
             paginationContainer.appendChild(prevButton);
         }
         
-        // Tạo các nút số trang (1, 2, 3...)
+        // Tạo các nút số trang với URL tĩnh (1, 2, 3...)
         for (let i = 1; i <= totalPages; i++) {
             const pageLink = document.createElement('a');
-            pageLink.href = '#news';
+            // URL tĩnh cho các trang
+            const pageUrl = i === 1 ? '/tin-tuc' : `/tin-tuc/trang-${i}`;
+            pageLink.href = pageUrl;
             
             // Áp dụng style khác cho trang hiện tại
             if (i === currentPage) {
                 pageLink.className = 'px-3 py-2 bg-blue-600 text-white rounded';
+                pageLink.setAttribute('aria-current', 'page');
             } else {
                 pageLink.className = 'px-3 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300 transition';
             }
@@ -1463,9 +1529,10 @@ document.addEventListener('DOMContentLoaded', function() {
         // Tạo nút "Sau" nếu không phải trang cuối
         if (currentPage < totalPages) {
             const nextButton = document.createElement('a');
-            nextButton.href = '#news';
+            nextButton.href = `/tin-tuc/trang-${currentPage + 1}`;
             nextButton.className = 'px-3 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300 transition';
             nextButton.textContent = 'Sau';
+            nextButton.setAttribute('rel', 'next');
             
             nextButton.addEventListener('click', function(e) {
                 e.preventDefault();
@@ -1528,7 +1595,65 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     });
+
+    // Thêm phần tạo nội dung tĩnh cho bộ máy tìm kiếm
+    function createStaticContentForSEO() {
+        // Kiểm tra nếu đang là trang phân trang tin tức
+        const pageMatcher = window.location.pathname.match(/\/tin-tuc\/trang-(\d+)/);
+        if (pageMatcher || window.location.pathname === '/tin-tuc') {
+            const page = pageMatcher ? parseInt(pageMatcher[1], 10) : 1;
+            
+            // Tính toán phạm vi tin tức cần hiển thị
+            const startIndex = (page - 1) * newsPerPage;
+            const endIndex = Math.min(startIndex + newsPerPage, allNewsItems.length);
+            
+            // Tạo một container ẩn để chứa nội dung dành cho SEO
+            let seoContainer = document.getElementById('seo-content');
+            if (!seoContainer) {
+                seoContainer = document.createElement('div');
+                seoContainer.id = 'seo-content';
+                seoContainer.setAttribute('aria-hidden', 'true');
+                seoContainer.style.display = 'none';
+                document.body.appendChild(seoContainer);
+            }
+            
+            // Thêm nội dung dành cho SEO
+            let seoContent = `<h1>Tin tức mới nhất - Trang ${page}</h1>`;
+            
+            // Thêm nội dung từ các tin tức trên trang hiện tại
+            for (let i = startIndex; i < endIndex; i++) {
+                if (allNewsItems[i]) {
+                    const newsTitle = allNewsItems[i].querySelector('h3')?.textContent || '';
+                    const newsDesc = allNewsItems[i].querySelector('p')?.textContent || '';
+                    seoContent += `<article><h2>${newsTitle}</h2><p>${newsDesc}</p></article>`;
+                }
+            }
+            
+            // Thêm liên kết phân trang (để bot có thể theo dõi)
+            seoContent += '<div class="pagination-links">';
+            if (page > 1) {
+                const prevUrl = page === 2 ? '/tin-tuc' : `/tin-tuc/trang-${page - 1}`;
+                seoContent += `<a href="${prevUrl}" rel="prev">Trang trước</a>`;
+            }
+            
+            for (let i = 1; i <= totalPages; i++) {
+                const pageUrl = i === 1 ? '/tin-tuc' : `/tin-tuc/trang-${i}`;
+                seoContent += `<a href="${pageUrl}"${i === page ? ' aria-current="page"' : ''}>${i}</a>`;
+            }
+            
+            if (page < totalPages) {
+                seoContent += `<a href="/tin-tuc/trang-${page + 1}" rel="next">Trang sau</a>`;
+            }
+            seoContent += '</div>';
+            
+            seoContainer.innerHTML = seoContent;
+        }
+    }
+    
+    // Gọi hàm tạo nội dung tĩnh cho SEO
+    createStaticContentForSEO();
 });
+
 </script>
 
 </body>
