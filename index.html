@@ -1054,11 +1054,21 @@
 <script>
 
 document.addEventListener("DOMContentLoaded", () => {
-    document.querySelectorAll("nav a, footer a, div a, li a, ul a").forEach(link => {
-      link.addEventListener("click", () => {
-        window.scrollTo({ top: 0, behavior: "smooth" });
-      });
+  // Hàm xử lý cuộn lên đầu trang
+  function scrollToTop() {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
+  // Tạo một class mới cho các liên kết cần cuộn
+  document.querySelectorAll(".scroll-top").forEach(link => {
+    link.addEventListener("click", function(e) {
+      // Đảm bảo showContent vẫn được gọi (thông qua onclick trong HTML) trước khi cuộn
+      setTimeout(() => {
+        scrollToTop();
+      }, 10);
     });
+  });
+});
 
     // Lắng nghe sự kiện Back/Forward trên trình duyệt
     window.addEventListener("popstate", (event) => {
