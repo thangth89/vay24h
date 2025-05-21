@@ -1054,20 +1054,11 @@
 <script>
 
 document.addEventListener("DOMContentLoaded", () => {
-  document.querySelectorAll("a").forEach(link => {
-    link.addEventListener("click", (e) => {
-      // Nếu link có onclick riêng thì bỏ qua
-      if (link.getAttribute("onclick")) return;
-
-      if (link.target === "_blank" || link.hasAttribute("data-no-scroll")) return;
-
-      const href = link.getAttribute("href");
-      if (href && href.startsWith("#")) return;
-
-      window.scrollTo({ top: 0, behavior: "smooth" });
+    document.querySelectorAll("nav a, footer a, div a, li a, ul a").forEach(link => {
+      link.addEventListener("click", () => {
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      });
     });
-  });
-});
 
     // Lắng nghe sự kiện Back/Forward trên trình duyệt
     window.addEventListener("popstate", (event) => {
@@ -1197,8 +1188,6 @@ function showContent(id) {
         // Cập nhật URL mà không tải lại trang
         history.pushState({ id: id }, pageTitle, newUrl);
     }
-// Cuộn mượt lên đầu trang sau khi hiển thị nội dung
-    window.scrollTo({ top: 0, behavior: "smooth" });
 }
 
 // Hàm tải nội dung tin tức bằng AJAX
