@@ -1054,7 +1054,7 @@
 <script>
   document.addEventListener("DOMContentLoaded", () => {
   document.querySelectorAll("nav a, footer a, div a, li a, ul a").forEach(link => {
-    link.addEventListener("click", (e) => {
+    link.addEventListener("click", () => {
       if (link.dataset.noScroll !== undefined) return; // nếu có thuộc tính data-no-scroll thì bỏ qua
       window.scrollTo({ top: 0, behavior: "smooth" });
     });
