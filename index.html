@@ -1056,19 +1056,14 @@
 document.addEventListener("DOMContentLoaded", () => {
   document.querySelectorAll("a").forEach(link => {
     link.addEventListener("click", (e) => {
-      // Nếu đã bị chặn bởi onclick="...; return false;"
-      if (e.defaultPrevented) return;
+      // Nếu link có onclick riêng thì bỏ qua
+      if (link.getAttribute("onclick")) return;
 
-      // Nếu target="_blank" hoặc có data-no-scroll thì bỏ qua
       if (link.target === "_blank" || link.hasAttribute("data-no-scroll")) return;
 
       const href = link.getAttribute("href");
       if (href && href.startsWith("#")) return;
 
-      // Nếu link dùng showContent, đừng xử lý ở đây nữa
-      if (link.getAttribute("onclick")?.includes("showContent")) return;
-
-      // Cuộn mượt
       window.scrollTo({ top: 0, behavior: "smooth" });
     });
   });
@@ -1202,6 +1197,8 @@ function showContent(id) {
         // Cập nhật URL mà không tải lại trang
         history.pushState({ id: id }, pageTitle, newUrl);
     }
+// Cuộn mượt lên đầu trang sau khi hiển thị nội dung
+    window.scrollTo({ top: 0, behavior: "smooth" });
 }
 
 // Hàm tải nội dung tin tức bằng AJAX
