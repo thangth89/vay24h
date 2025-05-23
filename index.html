@@ -1751,6 +1751,16 @@ document.addEventListener('DOMContentLoaded', function() {
     createStaticContentForSEO();
 });
 
+document.addEventListener("DOMContentLoaded", function () {
+  const path = window.location.pathname;
+  if (path.startsWith("/news/") && path.endsWith(".html")) {
+    const slug = path.split("/").pop().replace(".html", "");
+    const fallbackTitle = decodeURIComponent(slug.replace(/-/g, " "));
+    loadNews(path, fallbackTitle, false);
+  }
+});
+
+
 </script>
 
 </body>
