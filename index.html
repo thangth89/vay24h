@@ -1215,6 +1215,7 @@ function showContentWithoutHistory(id) {
 
 // Hàm hiển thị nội dung và thêm vào lịch sử
 function showContent(id) {
+preserveNavigationHistory();
     console.log("Hiển thị nội dung cho:", id);
     
     // Hiển thị nội dung
@@ -1322,6 +1323,9 @@ window.addEventListener('popstate', function(event) {
                 }
                 
                 console.log("News title found:", newsTitle);
+
+		// Lưu trạng thái hiện tại trước khi tải tin tức
+		const currentHistoryLength = history.length;
                 
                 // Tải tin tức với đường dẫn file thực tế
                 loadNews(actualNewsUrl, newsTitle, false);
@@ -1386,6 +1390,11 @@ function fetchNewsTitle(url) {
 // ✅ Cải thiện hàm loadNews để lưu thông tin tin tức tốt hơn
 function loadNews(url, title, addToHistory = true) {
     console.log("Đang tải tin tức từ URL:", url, "addToHistory:", addToHistory);
+
+    // Bảo vệ lịch sử điều hướng trước khi tải tin tức
+    if (addToHistory) {
+        preserveNavigationHistory();
+    }
     
     // Lưu thông tin tin tức hiện tại vào sessionStorage
     const newsSlug = url.split('/').pop().replace('.html', '');
@@ -1488,16 +1497,21 @@ function loadNews(url, title, addToHistory = true) {
             // Cập nhật tiêu đề trang
             document.title = title + ' - Vay Online';
             
-            // ✅ FIX 8: Cải thiện việc cập nhật history
-            if (addToHistory) {
-                // Cập nhật URL thân thiện và thêm vào lịch sử
-                history.pushState({ url: url, title: title, type: 'news' }, title, friendlyUrl);
-            } else {
-                // Chỉ cập nhật URL nếu khác với URL hiện tại
-                if (window.location.pathname !== friendlyUrl) {
-                    history.replaceState({ url: url, title: title, type: 'news' }, title, friendlyUrl);
-                }
-            }
+// ✅ FIX 8: Cải thiện việc cập nhật history
+if (addToHistory) {
+    // Cập nhật URL thân thiện và thêm vào lịch sử
+    history.pushState({ url: url, title: title, type: 'news' }, title, friendlyUrl);
+} else {
+    // Khi không thêm vào lịch sử (từ popstate), chỉ cập nhật state hiện tại
+    // KHÔNG thay đổi URL để giữ nguyên lịch sử trước đó
+    const currentState = history.state || {};
+    history.replaceState({ 
+        ...currentState,
+        url: url, 
+        title: title, 
+        type: 'news' 
+    }, title, window.location.pathname);
+}
             
             console.log("Đã cập nhật nội dung tin tức thành công");
         })
@@ -1894,6 +1908,30 @@ document.addEventListener('DOMContentLoaded', function() {
     createStaticContentForSEO();
 });
 
+// Hàm helper để kiểm tra và bảo vệ lịch sử trình duyệt
+function preserveNavigationHistory() {
+    // Lưu thông tin về các trang đã xem trước khi vào tin tức
+    if (typeof(Storage) !== "undefined") {
+        const currentPath = window.location.pathname;
+        
+        // Nếu không phải trang tin tức chi tiết, lưu vào lịch sử điều hướng
+        if (!currentPath.startsWith('/tin-tuc/') || currentPath === '/tin-tuc/') {
+            let navHistory = JSON.parse(sessionStorage.getItem('navigationHistory') || '[]');
+            
+            // Chỉ thêm nếu không phải là trang cuối cùng trong lịch sử
+            if (navHistory.length === 0 || navHistory[navHistory.length - 1] !== currentPath) {
+                navHistory.push(currentPath);
+                
+                // Giới hạn lịch sử không quá 10 trang để tránh chiếm bộ nhớ
+                if (navHistory.length > 10) {
+                    navHistory = navHistory.slice(-10);
+                }
+                
+                sessionStorage.setItem('navigationHistory', JSON.stringify(navHistory));
+            }
+        }
+    }
+}
 </script>
 
 </body>
