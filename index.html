@@ -281,7 +281,7 @@
                     <p>✔ Không gọi thẩm định người thân.</p>
                    </div>
                    <div class="md:w-1/2">
-                    <img loading="lazy" src="images/vay.webp" alt="minh họa" class="mx-auto max-h-64 rounded-xl shadow-md">
+                    <img loading="lazy" src="/images/vay.webp" alt="minh họa" class="mx-auto max-h-64 rounded-xl shadow-md">
                    </div>
                   </div>
                  </section>
@@ -1360,10 +1360,13 @@ window.addEventListener('popstate', function(event) {
                     }
                 }
                 
-                // Nếu không tìm thấy tin tức, chuyển về danh sách tin
-                if (!found) {
-                    showContentWithoutHistory('news');
-                }
+		 if (!found) {
+    		   const newsSlug = currentPath.split('/').pop();
+    		   const newsUrl = '/news/' + newsSlug + '.html';
+    		   const fallbackTitle = decodeURIComponent(newsSlug.replace(/-/g, ' '));
+
+    		   loadNews(newsUrl, fallbackTitle, false);
+		}
             }
         } else {
             // Tìm section tương ứng với URL hiện tại
