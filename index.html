@@ -1226,7 +1226,7 @@ function showContent(id) {
         const pageTitle = document.getElementById(id).querySelector('h2').textContent + ' - Vay Online';
         
         // Cập nhật URL mà không tải lại trang
-        history.pushState({ id: id }, pageTitle, newUrl);
+        history.pushState({ id: id, type: 'section' }, pageTitle, newUrl);
     }
 }
 
@@ -1251,8 +1251,13 @@ window.addEventListener('popstate', function(event) {
         const page = event.state.page || 1;
         displayNewsPage(page, false);
     } else if (event.state && event.state.id) {
-        // Quay trở lại một section
-        showContentWithoutHistory(event.state.id);
+    // Quay trở lại một section
+    showContentWithoutHistory(event.state.id);
+    
+    // Cuộn lên đầu trang
+    setTimeout(() => {
+        window.scrollTo({ top: 0, behavior: "smooth" });
+    }, 100);
     } else {
         // Nếu không có state cụ thể, phân tích URL hiện tại
         
