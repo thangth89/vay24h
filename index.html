@@ -774,6 +774,13 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
 
 		     <div class="bg-white p-4 rounded-lg shadow hover:shadow-lg">
+                        <a href="/news/top-5-vay-uy-tin.html" class="news-item-link" onclick="return loadNews(this.href, this.querySelector('h3').textContent)">
+                            <img loading="lazy" src="/images/top-5-vay-uy-tin.webp" alt="Top 5 Ứng Dụng Vay Tiền Uy Tín Tránh App Đen – Giải Pháp An Toàn Cho Người Dùng" class="w-full h-40 object-cover rounded mb-2">
+                            <h3 class="text-lg font-bold text-gray-800">Top 5 Ứng Dụng Vay Tiền Uy Tín Tránh App Đen – Giải Pháp An Toàn Cho Người Dùng</h3>
+                        </a>
+                     </div>
+
+		     <div class="bg-white p-4 rounded-lg shadow hover:shadow-lg">
                         <a href="/news/cach-vay-tien-online-nhanh-chong.html" class="news-item-link" onclick="return loadNews(this.href, this.querySelector('h3').textContent)">
                             <img loading="lazy" src="/images/cach-vay-tien-online-nhanh-chong.webp" alt="Cần tiền cấp? Đây là cách vay tiền online nhanh chóng, uy tín" class="w-full h-40 object-cover rounded mb-2">
                             <h3 class="text-lg font-bold text-gray-800">Cần tiền cấp? Đây là cách vay tiền online nhanh chóng, uy tín</h3>
@@ -994,8 +1001,17 @@
  </div>
 </div>
         <aside class="bg-gray-50 p-4 rounded-lg shadow hover:shadow-lg w-full md:w-1/4 md:ml-10 md:border-l md:border-gray-300 mt-8 md:mt-0">
-    	 <h3 class="text-lg font-semibold mb-4">BÀI VIẾT MỚI NHẤT</h3>
+    	 <h3 class="text-lg font-semibold mb-4">BÀI VIẾT NỔI BẬT</h3>
     	 <ul class="space-y-4">
+
+        <li class="flex items-center gap-3">
+            <img loading="lazy" src="/images/top-5-vay-uy-tin.webp" alt="Top 5 Ứng Dụng Vay Tiền Uy Tín Tránh App Đen – Giải Pháp An Toàn Cho Người Dùng" class="w-16 h-12 object-cover rounded" />
+            <a href="/news/top-5-vay-uy-tin.html"
+                class="text-blue-600 hover:underline flex-1"
+                onclick="return loadNews(this.href, 'Top 5 Ứng Dụng Vay Tiền Uy Tín Tránh App Đen – Giải Pháp An Toàn Cho Người Dùng')">
+                Top 5 Ứng Dụng Vay Tiền Uy Tín Tránh App Đen – Giải Pháp An Toàn Cho Người Dùng
+            </a>
+         </li>
 
          <li class="flex items-center gap-3">
             <img loading="lazy" src="/images/cach-vay-tien-online-nhanh-chong.webp" alt="Cần tiền cấp? Đây là cách vay tiền online nhanh chóng, uy tín" class="w-16 h-12 object-cover rounded" />
@@ -1042,14 +1058,6 @@
             </a>
          </li>
 
-          <li class="flex items-center gap-3">
-            <img loading="lazy" src="/images/canh-bao-app-vay-tien-tin-dung-den.webp" alt="Cảnh Báo Tín Dụng Đen Ẩn Mình Trong App Vay Tiền" class="w-16 h-12 object-cover rounded" />
-            <a href="/news/canh-bao-app-vay-tien-tin-dung-den.html"
-                class="text-blue-600 hover:underline flex-1"
-                onclick="return loadNews(this.href, 'Cảnh Báo Tín Dụng Đen Ẩn Mình Trong App Vay Tiền')">
-                Cảnh Báo Tín Dụng Đen Ẩn Mình Trong App Vay Tiền
-            </a>
-         </li>
       </ul>
   </aside>
     </main>
@@ -1274,6 +1282,9 @@ function loadNews(url, title, addToHistory = true) {
             document.getElementById('news-detail-content').innerHTML = '';
             document.getElementById('news-detail-content').appendChild(content.cloneNode(true));
             document.getElementById('news-title').textContent = title;
+
+	    // ✅ Cuộn lên đầu trang
+            window.scrollTo({ top: 0, behavior: 'smooth' });
             
             // Cập nhật tiêu đề trang
             document.title = title + ' - Vay Online';
@@ -1499,7 +1510,7 @@ document.addEventListener('DOMContentLoaded', function() {
         updateCanonicalLink(page);
         
         // Cuộn lên đầu phần tin tức
-        document.getElementById('news').scrollIntoView({ behavior: 'smooth' });
+        window.scrollTo({ top: 0, behavior: 'smooth' });
     }
     
     // Hàm cập nhật thẻ meta description cho SEO
