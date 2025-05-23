@@ -281,7 +281,7 @@
                     <p>✔ Không gọi thẩm định người thân.</p>
                    </div>
                    <div class="md:w-1/2">
-                    <img loading="lazy" src="/images/vay.webp" alt="minh họa" class="mx-auto max-h-64 rounded-xl shadow-md">
+                    <img loading="lazy" src="images/vay.webp" alt="minh họa" class="mx-auto max-h-64 rounded-xl shadow-md">
                    </div>
                   </div>
                  </section>
@@ -1314,22 +1314,64 @@ function loadNews(url, title, addToHistory = true) {
 }
 
 // Theo dõi sự kiện popstate (khi người dùng nhấn nút back/forward của trình duyệt)
-window.addEventListener('popstate', function () {
-  const path = window.location.pathname;
-
-  if (path === '/' || path === '/index.html') {
-    showContentWithoutHistory('home');
-  } else if (path === '/tin-tuc' || path === '/tin-tuc/') {
-    showContentWithoutHistory('news');
-  } else if (path.startsWith('/tin-tuc/') && path.endsWith('.html')) {
-    const slug = path.split('/').pop().replace('.html', '');
-    const filePath = "/news/" + slug + ".html";
-    const fallbackTitle = decodeURIComponent(slug.replace(/-/g, " "));
-    loadNews(filePath, fallbackTitle, false);
-  }
+window.addEventListener('popstate', function(event) {
+    console.log("Sự kiện popstate được kích hoạt:", event.state);
+    
+    // Xác định URL hiện tại dựa trên window.location
+    const currentPath = window.location.pathname;
+    
+    // Xử lý dựa vào state được lưu trong history hoặc URL hiện tại
+    if (event.state && event.state.type === 'news') {
+        // Quay trở lại một tin tức cụ thể
+        loadNews(event.state.url, event.state.title, false); // false để không thêm lịch sử mới
+    } else if (event.state && event.state.type === 'news-page') {
+        // Quay trở lại trang phân trang tin tức
+        showContentWithoutHistory('news');
+        // Hiển thị trang tin tức tương ứng
+        const page = event.state.page || 1;
+        displayNewsPage(page, false);
+    } else if (event.state && event.state.id) {
+        // Quay trở lại một section
+        showContentWithoutHistory(event.state.id);
+    } else {
+        // Nếu không có state cụ thể, phân tích URL hiện tại
+        
+        // Kiểm tra nếu là URL tin tức
+        if (currentPath.startsWith('/tin-tuc/') && currentPath !== '/tin-tuc/') {
+            // Kiểm tra nếu là URL phân trang
+            const pageMatcher = currentPath.match(/\/tin-tuc\/trang-(\d+)/);
+            if (pageMatcher) {
+                const pageNum = parseInt(pageMatcher[1], 10);
+                showContentWithoutHistory('news');
+                displayNewsPage(pageNum, false);
+            } else {
+                // Xử lý URL tin tức chi tiết
+                const newsSlug = currentPath.split('/').pop();
+                const newsUrl = '/news/' + newsSlug + '.html';
+                
+                // Tìm tin tức tương ứng
+                const newsLinks = document.querySelectorAll('.news-item-link');
+                let found = false;
+                for (let link of newsLinks) {
+                    if (link.getAttribute('href').includes(newsSlug)) {
+                        loadNews(link.getAttribute('href'), link.querySelector('h3').textContent, false);
+                        found = true;
+                        break;
+                    }
+                }
+                
+                // Nếu không tìm thấy tin tức, chuyển về danh sách tin
+                if (!found) {
+                    showContentWithoutHistory('news');
+                }
+            }
+        } else {
+            // Tìm section tương ứng với URL hiện tại
+            const sectionId = contentMappings[currentPath] || 'home';
+            showContentWithoutHistory(sectionId);
+        }
+    }
 });
-
-
 
 // Khởi tạo trạng thái ban đầu của trang khi tải
 document.addEventListener('DOMContentLoaded', function() {
@@ -1705,19 +1747,6 @@ document.addEventListener('DOMContentLoaded', function() {
     // Gọi hàm tạo nội dung tĩnh cho SEO
     createStaticContentForSEO();
 });
-
-document.addEventListener("DOMContentLoaded", function () {
-  const path = window.location.pathname;
-
-  if (path.startsWith("/tin-tuc/") && path.endsWith(".html")) {
-    const slug = path.split("/").pop().replace(".html", "");
-    const filePath = "/news/" + slug + ".html";
-    const fallbackTitle = decodeURIComponent(slug.replace(/-/g, " "));
-    loadNews(filePath, fallbackTitle, false);
-  }
-});
-
-
 
 </script>
 
