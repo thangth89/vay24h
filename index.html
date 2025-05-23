@@ -1301,13 +1301,19 @@ function loadNews(url, title, addToHistory = true) {
             console.log("Đã cập nhật nội dung tin tức thành công");
         })
         .catch(error => {
-            document.getElementById('news-detail-content').innerHTML = 
-                '<div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded" role="alert">' +
-                '<p>Không thể tải nội dung tin tức. Vui lòng thử lại sau.</p>' +
-                '<p>Lỗi: ' + error.message + '</p>' +
-                '</div>';
-            console.error('Error loading news:', error);
-        });
+    document.getElementById('news-detail-content').innerHTML = 
+        '<div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded" role="alert">' +
+        '<p>Không thể tải nội dung tin tức. Vui lòng thử lại sau.</p>' +
+        '<p>Lỗi: ' + error.message + '</p>' +
+        '</div>';
+    console.error('Error loading news:', error);
+})
+.finally(() => {
+    // Đảm bảo URL được cập nhật đúng
+    if (addToHistory && window.location.pathname !== friendlyUrl) {
+        history.replaceState({ url: url, title: title, type: 'news' }, title, friendlyUrl);
+    }
+});
         
     // Ngăn chặn hành vi mặc định của thẻ a
     return false;
@@ -1350,15 +1356,18 @@ window.addEventListener('popstate', function(event) {
                 const newsUrl = '/news/' + newsSlug + '.html';
                 
                 // Tìm tin tức tương ứng
-                const newsLinks = document.querySelectorAll('.news-item-link');
-                let found = false;
-                for (let link of newsLinks) {
-                    if (link.getAttribute('href').includes(newsSlug)) {
-                        loadNews(link.getAttribute('href'), link.querySelector('h3').textContent, false);
-                        found = true;
-                        break;
-                    }
-                }
+                // Tìm tin tức tương ứng
+		const newsLinks = document.querySelectorAll('a[href*="/news/"]');
+		let found = false;
+		for (let link of newsLinks) {
+    		 const linkHref = link.getAttribute('href');
+    		 if (linkHref && linkHref.includes(newsSlug)) {
+        	 const title = link.querySelector('h3')?.textContent || link.textContent || 'Tin tức';
+        	 loadNews(linkHref, title, false);
+        	 found = true;
+        	 break;
+    	          }
+		}
                 
                 // Nếu không tìm thấy tin tức, chuyển về danh sách tin
                 if (!found) {
@@ -1396,17 +1405,17 @@ document.addEventListener('DOMContentLoaded', function() {
         const newsUrl = '/news/' + newsSlug + '.html';
         
         // Tìm tin tức tương ứng
-        const newsLinks = document.querySelectorAll('.news-item-link');
-        let found = false;
-        for (let link of newsLinks) {
-            if (link.getAttribute('href').includes(newsSlug)) {
-                // Tải nội dung tin tức nhưng không thêm vào lịch sử
-                loadNews(link.getAttribute('href'), link.querySelector('h3').textContent, false);
-                found = true;
-                break;
-            }
-        }
-        
+   const newsLinks = document.querySelectorAll('a[href*="/news/"]');
+   let found = false;
+   for (let link of newsLinks) {
+    const linkHref = link.getAttribute('href');
+    if (linkHref && linkHref.includes(newsSlug)) {
+        const title = link.querySelector('h3')?.textContent || link.textContent || 'Tin tức';
+        loadNews(linkHref, title, false);
+        found = true;
+        break;
+    }
+   }
         // Nếu không tìm thấy tin tức, chuyển hướng về danh sách tin
         if (!found) {
             // Khởi tạo trạng thái ban đầu là trang danh sách tin tức
