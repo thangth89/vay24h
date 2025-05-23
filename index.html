@@ -1230,6 +1230,9 @@ function showContent(id) {
     }
 }
 
+
+
+
 // Sửa phần xử lý popstate để tải đúng nội dung tin tức khi back
 window.addEventListener('popstate', function(event) {
     console.log("Sự kiện popstate được kích hoạt:", event.state);
@@ -1269,48 +1272,48 @@ window.addEventListener('popstate', function(event) {
                 console.log("Current path:", currentPath);
                 
                 // ✅ FIX: Chuyển đổi từ URL thân thiện sang đường dẫn file thực tế
-                // URL hiện tại: /tin-tuc/slug-name
-                // Cần tải file từ: /news/slug-name.html
-                
                 const actualNewsUrl = '/news/' + newsSlug + '.html';
                 
                 console.log("Actual news URL to load:", actualNewsUrl);
                 
-                // Tìm title từ các link có sẵn trên trang
+                // ✅ FIX 1: Cải thiện việc tìm title
                 let newsTitle = 'Tin tức';
-                const newsLinks = document.querySelectorAll('a[href*="/news/"]');
                 
-                for (let link of newsLinks) {
-                    const linkHref = link.getAttribute('href');
-                    if (linkHref) {
-                        // Lấy slug từ href (bỏ đuôi .html)
-                        const linkSlug = linkHref.split('/').pop().replace('.html', '');
-                        
-                        if (linkSlug === newsSlug) {
-                            // Tìm title từ nhiều nguồn
-                            newsTitle = link.querySelector('h3')?.textContent ||
-                                       link.querySelector('h2')?.textContent ||
-                                       link.textContent.trim() ||
-                                       link.getAttribute('title') ||
-                                       'Tin tức';
-                            break;
-                        }
-                    }
-                }
-                
-                // Thử tìm trong sessionStorage nếu không tìm thấy
-                if (newsTitle === 'Tin tức' && typeof(Storage) !== "undefined") {
+                // Thử tìm trong sessionStorage trước
+                if (typeof(Storage) !== "undefined") {
                     const savedNews = sessionStorage.getItem('currentNews');
                     if (savedNews) {
                         try {
                             const newsData = JSON.parse(savedNews);
                             if (newsData.slug === newsSlug) {
                                 newsTitle = newsData.title;
+                                console.log("Found title from sessionStorage:", newsTitle);
                             }
                         } catch (e) {
                             console.log("Không thể parse saved news data");
                         }
                     }
+                }
+                
+                // ✅ FIX 2: Nếu chưa có title từ sessionStorage, thử tìm từ DOM
+                if (newsTitle === 'Tin tức') {
+                    newsTitle = findNewsTitleFromDOM(newsSlug) || 'Tin tức';
+                }
+                
+                // ✅ FIX 3: Nếu vẫn không có title, fetch trước để lấy title từ file
+                if (newsTitle === 'Tin tức') {
+                    fetchNewsTitle(actualNewsUrl).then(title => {
+                        if (title) {
+                            newsTitle = title;
+                            console.log("Found title from file:", newsTitle);
+                        }
+                        // Load tin tức với title đã tìm được
+                        loadNews(actualNewsUrl, newsTitle, false);
+                    }).catch(() => {
+                        // Nếu không lấy được title, vẫn load với title mặc định
+                        loadNews(actualNewsUrl, newsTitle, false);
+                    });
+                    return; // Thoát khỏi function để chờ async
                 }
                 
                 console.log("News title found:", newsTitle);
@@ -1326,7 +1329,56 @@ window.addEventListener('popstate', function(event) {
     }
 });
 
-// ✅ Cải thiện hàm loadNews để lưu thông tin tin tức
+// ✅ FIX 4: Thêm hàm helper để tìm title từ DOM
+function findNewsTitleFromDOM(newsSlug) {
+    const newsLinks = document.querySelectorAll('a[href*="/news/"]');
+    
+    for (let link of newsLinks) {
+        const linkHref = link.getAttribute('href');
+        if (linkHref) {
+            // Lấy slug từ href (bỏ đuôi .html)
+            const linkSlug = linkHref.split('/').pop().replace('.html', '');
+            
+            if (linkSlug === newsSlug) {
+                // Tìm title từ nhiều nguồn
+                const title = link.querySelector('h3')?.textContent ||
+                             link.querySelector('h2')?.textContent ||
+                             link.textContent.trim() ||
+                             link.getAttribute('title');
+                             
+                if (title && title.trim()) {
+                    return title.trim();
+                }
+            }
+        }
+    }
+    return null;
+}
+
+// ✅ FIX 5: Thêm hàm để fetch title từ file tin tức
+function fetchNewsTitle(url) {
+    return fetch(url)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.text();
+        })
+        .then(html => {
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(html, 'text/html');
+            
+            // Tìm title từ nhiều nguồn trong file
+            const title = doc.querySelector('h1')?.textContent ||
+                         doc.querySelector('title')?.textContent ||
+                         doc.querySelector('.news-title')?.textContent ||
+                         doc.querySelector('.article-title')?.textContent;
+                         
+            return title ? title.trim() : null;
+        });
+}
+
+// ✅ Cải thiện hàm loadNews để lưu thông tin tin tức tốt hơn
 function loadNews(url, title, addToHistory = true) {
     console.log("Đang tải tin tức từ URL:", url, "addToHistory:", addToHistory);
     
@@ -1336,7 +1388,8 @@ function loadNews(url, title, addToHistory = true) {
         sessionStorage.setItem('currentNews', JSON.stringify({
             slug: newsSlug,
             title: title,
-            url: url
+            url: url,
+            timestamp: Date.now() // Thêm timestamp để theo dõi
         }));
     }
     
@@ -1347,10 +1400,17 @@ function loadNews(url, title, addToHistory = true) {
         return false;
     }
     
-    // Hiển thị phần chi tiết tin tức
+    // ✅ FIX 6: Đảm bảo hiển thị section đúng cách
+    // Ẩn tất cả sections trước
     const sections = document.querySelectorAll('.content-section');
-    sections.forEach(section => section.classList.add('hidden'));
+    sections.forEach(section => {
+        section.classList.add('hidden');
+        section.style.display = 'none'; // Thêm inline style để chắc chắn
+    });
+    
+    // Hiển thị section news-detail
     newsDetailSection.classList.remove('hidden');
+    newsDetailSection.style.display = 'block'; // Thêm inline style để chắc chắn
     
     // Cập nhật menu active
     const links = document.querySelectorAll('.menu-link');
@@ -1361,8 +1421,11 @@ function loadNews(url, title, addToHistory = true) {
     }
     
     // Hiển thị trạng thái đang tải
-    document.getElementById('news-detail-content').innerHTML = 
-        '<div class="flex justify-center items-center h-64"><div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-green-500"></div></div>';
+    const newsDetailContent = document.getElementById('news-detail-content');
+    if (newsDetailContent) {
+        newsDetailContent.innerHTML = 
+            '<div class="flex justify-center items-center h-64"><div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-green-500"></div></div>';
+    }
     
     // Tạo đường dẫn URL thân thiện từ URL tin tức
     const friendlyUrl = '/tin-tuc/' + newsSlug;
@@ -1383,10 +1446,36 @@ function loadNews(url, title, addToHistory = true) {
             const doc = parser.parseFromString(html, 'text/html');
             const content = doc.querySelector('.news-content') || doc.body;
             
+            // ✅ FIX 7: Cập nhật title nếu tìm được từ nội dung file
+            if (title === 'Tin tức') {
+                const fileTitle = doc.querySelector('h1')?.textContent ||
+                                 doc.querySelector('title')?.textContent ||
+                                 doc.querySelector('.news-title')?.textContent ||
+                                 doc.querySelector('.article-title')?.textContent;
+                if (fileTitle && fileTitle.trim()) {
+                    title = fileTitle.trim();
+                    // Cập nhật lại sessionStorage với title mới
+                    if (typeof(Storage) !== "undefined") {
+                        sessionStorage.setItem('currentNews', JSON.stringify({
+                            slug: newsSlug,
+                            title: title,
+                            url: url,
+                            timestamp: Date.now()
+                        }));
+                    }
+                }
+            }
+            
             // Cập nhật nội dung
-            document.getElementById('news-detail-content').innerHTML = '';
-            document.getElementById('news-detail-content').appendChild(content.cloneNode(true));
-            document.getElementById('news-title').textContent = title;
+            if (newsDetailContent) {
+                newsDetailContent.innerHTML = '';
+                newsDetailContent.appendChild(content.cloneNode(true));
+            }
+            
+            const newsTitleElement = document.getElementById('news-title');
+            if (newsTitleElement) {
+                newsTitleElement.textContent = title;
+            }
 
             // ✅ Cuộn lên đầu trang
             window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -1394,35 +1483,36 @@ function loadNews(url, title, addToHistory = true) {
             // Cập nhật tiêu đề trang
             document.title = title + ' - Vay Online';
             
-            // Chỉ cập nhật URL và thêm vào lịch sử nếu addToHistory = true
+            // ✅ FIX 8: Cải thiện việc cập nhật history
             if (addToHistory) {
                 // Cập nhật URL thân thiện và thêm vào lịch sử
                 history.pushState({ url: url, title: title, type: 'news' }, title, friendlyUrl);
-            } else if (window.location.pathname !== friendlyUrl) {
-                // Cập nhật URL nhưng không thêm vào lịch sử (replaceState thay vì pushState)
-                history.replaceState({ url: url, title: title, type: 'news' }, title, friendlyUrl);
+            } else {
+                // Chỉ cập nhật URL nếu khác với URL hiện tại
+                if (window.location.pathname !== friendlyUrl) {
+                    history.replaceState({ url: url, title: title, type: 'news' }, title, friendlyUrl);
+                }
             }
             
             console.log("Đã cập nhật nội dung tin tức thành công");
         })
         .catch(error => {
-            document.getElementById('news-detail-content').innerHTML = 
-                '<div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded" role="alert">' +
-                '<p>Không thể tải nội dung tin tức. Vui lòng thử lại sau.</p>' +
-                '<p>Lỗi: ' + error.message + '</p>' +
-                '</div>';
-            console.error('Error loading news:', error);
-        })
-        .finally(() => {
-            // Đảm bảo URL được cập nhật đúng
-            if (addToHistory && window.location.pathname !== friendlyUrl) {
-                history.replaceState({ url: url, title: title, type: 'news' }, title, friendlyUrl);
+            if (newsDetailContent) {
+                newsDetailContent.innerHTML = 
+                    '<div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded" role="alert">' +
+                    '<p>Không thể tải nội dung tin tức. Vui lòng thử lại sau.</p>' +
+                    '<p>Lỗi: ' + error.message + '</p>' +
+                    '</div>';
             }
+            console.error('Error loading news:', error);
         });
         
     // Ngăn chặn hành vi mặc định của thẻ a
     return false;
 }
+
+
+
 
 // Khởi tạo trạng thái ban đầu của trang khi tải
 document.addEventListener('DOMContentLoaded', function() {
